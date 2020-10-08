@@ -1,0 +1,33 @@
+.recommend {
+  display: none;
+
+  &.show {
+    display: block;
+  }
+
+  .recommend-panel-title {
+    .fl {
+      float: left;
+    }
+    .fr {
+      float: right;
+      font-size: .8rem;
+      vertical-align: text-bottom;
+      cursor: pointer;
+      color: rgba(0,0,0,.8);
+      &:hover {
+        color: black;
+      }
+    }
+    overflow: hidden;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 12px;
+  }
+
+  .playlist-item-container {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+    flex-wrap: wrap;
+  }
+}

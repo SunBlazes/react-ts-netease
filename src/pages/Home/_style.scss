@@ -1,0 +1,37 @@
+.home-sider, .home-content {
+  height: calc(100vh - 56px - 50px);
+}
+
+.home-sider {
+  background-color: #FFFAF0;
+  position: relative;
+  .ant-menu-item-group {
+    background-color: #FFFAF0 !important;
+  }
+  .ant-menu-item-selected {
+    background-color: transparentize($color: $theme-color, $amount: 0.5) !important;
+    color: white !important;
+    a {
+      color: white !important;
+    }
+  }
+}
+
+.home-content {
+  position: relative;
+  scroll-behavior: smooth;
+  min-width: 950px;
+  padding: 0 30px;
+  overflow-y: scroll;
+  @extend %scroll-bar;
+}
+
+.home-footer {
+  background-color: snow;
+  border-top: 1px solid rgba(0,0,0,.2);
+  padding: 0px 10px;
+  height: 50px;
+  box-sizing: border-box;
+  font-size: 0;
+  min-width: 1020px;
+}

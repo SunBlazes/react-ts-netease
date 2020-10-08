@@ -1,0 +1,65 @@
+.zsw-swipe {
+  width: 100%;
+  position: relative;
+  height: $swipe-item-height + 50px;
+}
+
+.swipe-item {
+  position: absolute;
+  width: $swipe-item-width;
+  transition: $swipe-item-transition;
+  transform: scale(1);
+  opacity: 1;
+
+  img {
+    width: 100%;
+  }
+
+  &.right {
+    left: calc(50% - (540px - 50%));
+    z-index: 0;
+
+    &::after {
+      @extend %swipe-item-cover;
+    }
+  }
+
+  &.active {
+    left: calc(50% - 270px);
+    z-index: 1;
+    transform: scale(1.1);
+  }
+
+  &.center {
+    left: calc(50% - 270px);
+    z-index: 0;
+    opacity: 0;
+  }
+
+  &.left {
+    left: 0;
+    z-index: 0;
+    &::after {
+      @extend %swipe-item-cover;
+    }
+  }
+}
+
+.dots {
+  list-style: none;
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  .dot {
+    float: left;
+    width: $dot-width;
+    height: $dot-height;
+    background-color: $dot-color;
+    margin: $dot-margin;
+    cursor: pointer;
+    &.active {
+      background-color: $dot-active-color;
+    }
+  }
+}

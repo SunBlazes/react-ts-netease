@@ -1,0 +1,62 @@
+// variables
+@import './variables';
+
+// preset
+@import './presets';
+
+// mixin
+@import './mixin';
+
+// Swipe
+@import '../common/Swipe/style';
+
+// header
+@import '../common/Header/style';
+
+// searchInput
+@import '../common/SearchInput/style';
+
+// signIn
+@import '../common/SignIn/style';
+
+// home
+@import '../pages/Home/style';
+
+// searchMusic
+@import '../pages/SearchMusic/style';
+
+// searchMusic/recommed
+@import '../pages/Recommend/style';
+
+// playlistItem
+@import '../common/PlayListItem/style';
+
+// playlist
+@import '../pages/PlayList/style';
+
+// playlistInfo
+@import '../common/PlaylistInfo/style';
+
+// comments
+@import '../common/comments/style';
+
+// player
+@import '../common/Player/style';
+
+// songDetail
+@import '../common/SongDetail/style';
+
+// simiPlaylist
+@import '../common/SimiPlaylist/style';
+
+// totalplaylists
+@import '../pages/TotalPlaylists/style';
+
+// totalranks
+@import '../pages/Rank/style';
+
+// singerRank
+@import '../pages/SingerRank/style';
+
+// singerDetail
+@import '../pages/SingerDetail/style';

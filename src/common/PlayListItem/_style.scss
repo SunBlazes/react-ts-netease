@@ -1,0 +1,76 @@
+.playlist-item {
+  width: 18%;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  margin-bottom: 10px;
+
+  img {
+    width: 100%;
+    &.tran:hover {
+      ~ .copywriter {
+        top: 0;
+      }
+      ~ .play-count {
+        top: -30px;
+      }
+    }
+    &:hover {
+      ~ .play-icon {
+        opacity: 1;
+      }
+    }
+  }
+
+  .lazyload {
+    width: 100%;
+  }
+
+  .play-count {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    text-align: right;
+    background-image: linear-gradient(to right, transparent 0 , transparent 40%, rgba(0,0,0,.8));
+    color: white;
+    padding-right: 10px;
+    box-sizing: border-box;
+    transition: top .1s linear;
+    pointer-events: none;
+    transition-delay: .3s;
+  }
+
+  .description {
+    font-size: .8rem;
+    word-break: break-all;
+    height: 1.5 * .8rem * 2;
+    overflow: hidden;
+    width: 100%;
+    text-overflow: ellipsis;
+  }
+
+  .play-icon {
+    position: absolute;
+    bottom: 1.5 * .8rem * 2;
+    right: 10px;
+    font-size: 1.5rem;
+    color: white !important;
+    opacity: 0;
+    transition: opacity .3s linear;
+  }
+
+  .copywriter {
+    position: absolute;
+    top: -100px;
+    left: 0;
+    right: 0;
+    background-color: rgba(0,0,0,.3);
+    padding: 5px;
+    color: white;
+    font-size: .8rem;
+    transition: top .3s linear;
+    transition-delay: .3s;
+    pointer-events: none;
+  }
+}

@@ -1,0 +1,47 @@
+%swipe-item-cover {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  content: '';
+  background-color: transparentize($color: #000000, $amount: .5);
+}
+
+@mixin animation($val) {
+  animation: $val;
+}
+
+@mixin keyframes($name, $obj) {
+  @keyframes #{$name} {
+    @each $i,$val in $obj {
+      #{$i} {
+        @each $i1,$val1 in $val {
+          #{$i1}:$val1;
+        }
+      }
+    }
+  }
+}
+
+%scroll-bar {
+  &::-webkit-scrollbar{
+    width:10px;
+    height:10px;
+    /**/
+  }
+  &::-webkit-scrollbar-track{
+    background: rgb(239, 239, 239);
+    border-radius:2px;
+  }
+  &::-webkit-scrollbar-thumb{
+    background: #ccc;
+    border-radius:10px;
+  }
+  &::-webkit-scrollbar-thumb:hover{
+    background: #bfbfbf;
+  }
+  &::-webkit-scrollbar-corner{
+    background: none;
+  }
+}

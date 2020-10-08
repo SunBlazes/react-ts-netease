@@ -1,0 +1,45 @@
+.search-music {
+  position: relative;
+  height: 100%;
+  margin: 0 auto;
+
+  .nav {
+    display: flex;
+    justify-content: center;
+    margin: 0 auto;
+    border-bottom: 2px solid #ccc;
+    margin: 0 20px;
+  
+    .ant-menu {
+      background-color: transparent;
+    }
+  
+    .ant-menu-item {
+      font-size: 1rem;
+      margin: 0 40px !important;
+  
+      &:hover, &.ant-menu-item-selected  {
+        color: transparentize($color: $theme-color, $amount: .2) !important;
+        border-bottom-color: transparentize($color: $theme-color, $amount: .2) !important;
+      }
+    }
+  }
+
+  @media screen and(max-width: 1300px) {
+    .search-music-content {
+      width: 100% !important;
+    }
+  }
+
+  .search-music-content {
+    margin: 0 auto;
+    height: calc(100vh - 51px - 49px - 56px - 30px);
+    width: 1050px;
+    position: relative;
+  }
+
+  .animate__animated {
+    animation-duration: .4s !important;
+  }
+
+}

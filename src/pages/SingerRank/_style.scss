@@ -1,0 +1,154 @@
+.total-singer-rank {
+  display: none;
+
+  &.show {
+    display: block;
+  }
+
+  .total-singer-rank-title {
+    padding: 30px 0;
+    font-size: 1.2rem;
+    font-weight: 510;
+  }
+
+  .total-singer-rank-tab {
+    border-bottom: 1px solid rgba($color: #ccc, $alpha: .7);
+    position: relative;
+
+    .total-singer-rank-tab-item {
+      font-size: .9rem;
+      padding-bottom: 5px;
+      display: inline-block;
+      margin-right: 25px;
+      color: rgba($color: #000, $alpha: .7);
+      cursor: pointer;
+
+      &.selected {
+        border-bottom: 2px solid rgba($color: #000, $alpha: .5);
+      }
+      &:hover {
+        color: rgba($color: #000, $alpha: 1);
+      }
+    }
+
+    .total-singer-rank-tab-updateTime {
+      position: absolute;
+      right: 0;
+      bottom: 1px;
+      font-size: .8rem;
+      color: rgba($color: #000000, $alpha: .7);
+      >span {
+        margin-right: 5px;
+      }
+    }
+  }
+
+  .total-singer-rank-content {
+    margin-top: 15px;
+    .total-singer-rank-content-loading {
+      font-size: .8rem;
+      text-align: center;
+      margin-top: 50px;
+      .anticon {
+        font-size: 1rem;
+        margin-right: 10px;
+      }
+    }
+  }
+}
+
+.total-singer-rank-item {
+  display: flex;
+  padding: 5px 0;
+  align-items: center;
+  position: relative;
+  cursor: pointer;
+
+  &:nth-child(even) {
+    background-color: rgba($color: #ccc, $alpha: .15);
+  }
+
+  &:hover {
+    background-color: rgba($color: #ccc, $alpha: .4);
+    .total-singer-rank-item-score-inner {
+      background-color: rgba($color: #ccc, $alpha: 1);
+    }
+  }
+
+  .total-singer-rank-item-index {
+    width: 50px;
+    text-align: center;
+
+    .total-singer-rank-item-index-curr {
+      font-size: 1.1rem;
+      color: #ccc;
+      line-height: 1;
+
+      &.three {
+        color: $theme-color;
+      }
+    }
+    .total-singer-rank-item-index-dis {
+      font-size: .8rem;
+      color: rgba($color: #000, $alpha: .7);
+
+      &.positive {
+        color: pink;
+        .iconfont {
+          font-size: .7rem;
+        }
+      }
+
+      &.negative {
+        color: rgba($color: skyblue, $alpha: .8);
+        .iconfont {
+          font-size: .7rem;
+          transform: rotate(180deg);
+          display: inline-block;
+        }
+      }
+
+      &.new {
+        font-size: .8rem;
+        color: green;
+      }
+    }
+  }
+
+  .total-singer-rank-item-name {
+    width: 200px;
+    font-size: .8rem;
+    margin-left: 20px;
+
+  }
+
+  .total-singer-rank-item-img {
+    width: 44px;
+    height: 44px;
+    border: 1px solid #ccc;
+    img {
+      width: 100%;
+    }
+  }
+
+  .total-singer-rank-item-score {
+    position: absolute;
+    top: 50%;
+    right: 0;
+    transform: translateY(-50%);
+    width: 100px;
+    background-color: rgba($color: #ccc, $alpha: .4);
+    height: 10px;
+    border-radius: 5px;
+
+    .total-singer-rank-item-score-inner {
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 0;
+      border-radius: 5px;
+      background-color: rgba($color: #ccc, $alpha: .8);
+    }
+  }
+}

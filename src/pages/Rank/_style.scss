@@ -1,0 +1,131 @@
+.total-ranks {
+  display: none;
+
+  &.show {
+    display: block;
+  }
+
+  .total-rank-loading {
+    font-size: .8rem;
+    text-align: center;
+    margin-top: 200px;
+    .anticon {
+      font-size: 1rem;
+      margin-right: 5px;
+    }
+  }
+  .total-ranks-inner {
+    margin-top: 30px;
+    .official-rank {
+      .official-rank-content {
+        padding: 15px 0;
+      }
+    }
+    .global-rank {
+      .global-rank-content {
+        padding: 15px 0;
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+      }
+    }
+    .total-ranks-title {
+      padding-bottom: 10px;
+      border-bottom: 1px solid #ccc;
+      font-size: 1.2rem;
+    }
+  }
+}
+
+.official-rank-item {
+  width: 33.3%;
+  display: inline-block;
+  padding: 0 calc((33.3% - 300px) / 2) ;
+  margin-bottom: 30px;
+  .official-rank-item-top {
+    position: relative;
+    cursor: pointer;
+    height: 100px;
+
+    &:hover {
+      .official-rank-item-left-overlay {
+        transition: opacity .3s linear;
+        opacity: 1;
+      }
+    }
+    .official-rank-item-left-overlay {
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      background-color: rgba(0,0,0,.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      .anticon {
+        font-size: 3.6rem;
+        color: white;
+      }
+    }
+  }
+  .official-rank-item-bottom {
+    border: 1px solid transparentize($color: #ccc, $amount: .6);
+    border-top: none;
+    color: rgba($color: #000000, $alpha: .8);
+    .official-rank-item-bottom-item {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding: 5px 0;
+      cursor: pointer;
+      .official-rank-item-bottom-item-index {
+        width: 20px;
+        color: transparentize($color: $theme-color, $amount: .2);
+      }
+      .official-rank-item-bottom-item-song-name {
+        width: 150px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        font-size: .8rem;
+      }
+      .official-rank-item-bottom-item-singer-name {
+        width: 70px;
+        text-align: right;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        font-size: .8rem;
+        color: transparentize($color: gray, $amount: .5);
+      }
+      &:nth-child(odd) {
+        background-color: transparentize($color: gray, $amount: .95);
+      }
+      &:hover {
+        background-color: transparentize($color: gray, $amount: .85);
+        .official-rank-item-bottom-item-song-name {
+          color: rgba($color: #000000, $alpha: 1);
+        }
+        .official-rank-item-bottom-item-singer-name {
+          color: transparentize($color: gray, $amount: .3);
+        }
+      }
+    }
+    .official-rank-item-bottom-btn {
+      padding: 10px;
+      font-size: .8rem;
+      color: rgba($color: #000000, $alpha: .7);
+      background-color: transparentize($color: #ccc, $amount: .8);
+      overflow: hidden;
+      border-top: 1px solid #ccc;
+      > span {
+        cursor: pointer;
+        &:hover {
+          color: rgba($color: #000000, $alpha: .9);
+        }
+      }
+    }
+  }
+}

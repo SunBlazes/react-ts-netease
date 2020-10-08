@@ -1,0 +1,64 @@
+.signin {
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
+  top: 0;
+  left: 0;
+  background-color: transparentize(black, .9);
+  z-index: 2000;
+  display: none;
+
+  &.show {
+    display: block;
+  }
+  
+  .content {
+    padding: $signin-padding;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: $signin-width;
+    box-shadow: $signin-box-shadow;
+    position: absolute;
+    z-index: 2001;
+    background-color: white;
+  }
+
+  .nav {
+    padding: 0;
+    .anticon-arrow-left {
+      color: transparentize($color: $theme-color, $amount: .5);
+      transition: color .2s linear;
+      &:hover {
+        color: $theme-color;
+      }
+    }
+    .ant-page-header-heading-title {
+      color: $theme-color;
+      user-select: none;
+    }
+  }
+
+  .title {
+    text-align: center;
+    user-select: none;
+    margin: 0;
+    color: transparentize($color: $theme-color, $amount: .5);
+  }
+
+  .btn {
+    margin: 0 20px;
+    text-align: center;
+    background-color: transparentize($color: $theme-color, $amount: .5);
+    font-size: 1rem;
+    color: white;
+    height: 40px;
+    line-height: 40px;
+    border-radius: 20px;
+    cursor: pointer;
+
+    &:hover {
+      background-color: transparentize($color: $theme-color, $amount: .4);
+    }
+  }
+}

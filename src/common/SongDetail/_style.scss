@@ -1,0 +1,299 @@
+.zsw-song-detail {
+  position: absolute;
+  bottom: 0;
+  height: 80px;
+  border-top: 1px solid #ccc;
+  right: 0;
+  left: 0;
+  padding: 10px 10px;
+  display: flex;
+  .animate__animated {
+    animation-duration: 400ms !important;
+  }
+
+  .zsw-song-detail-left {
+    border: 1px solid #ccc;
+    width: 60px;
+    height: 60px;
+    position: relative;
+    cursor: pointer;
+
+    &:hover {
+      .zsw-song-detail-enlarge {
+        display: block;
+      }
+    }
+
+    .zsw-song-detail-img {
+      width: 100%;
+    }
+
+    .zsw-song-detail-enlarge {
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      background-color: rgba(0,0,0,.5);
+      display: none;
+      text-align: center;
+
+      .anticon {
+        color: white;
+        line-height: 60px;
+        font-size: 1.7rem;
+        font-weight: bold;
+      }
+    }
+  }
+
+  .zsw-song-detail-info {
+    padding: 10px 0;
+    line-height: 1;
+    font-size: .8rem;
+    margin-left: 10px;
+    .zsw-song-detail-info-singername {
+      color: #8B8B7A;
+    }
+    p {
+      width: 110px;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+    }
+  }
+}
+
+.zsw-song-detail-content {
+  position: fixed;
+  top: 56px;
+  bottom: 50px;
+  left: 0;
+  right: 0;
+  background-color: white;
+  z-index: 1002;
+  overflow: scroll;
+  
+  &.hidden {
+    visibility: hidden;
+    .zsw-song-detail-content-bottom {
+      display: none;
+    }
+  }
+
+  &::-webkit-scrollbar{
+    width:10px;
+    height:10px;
+  }
+  &::-webkit-scrollbar-track{
+    border-radius:2px;
+    border-right: 1px solid #ccc;
+  }
+  &::-webkit-scrollbar-thumb{
+    background: #bfbfbf;
+    border-radius:10px;
+  }
+  &::-webkit-scrollbar-thumb:hover{
+    background: transparentize($color: #bfbfbf, $amount: .2);
+  }
+  &::-webkit-scrollbar-corner{
+    background: none;
+  }
+
+  .zsw-song-detail-content-top {
+    position: relative;
+    height: 450px;
+    .zsw-song-detail-content-top-overlay {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      background-position: center;
+      background-repeat: no-repeat;
+      filter: blur(150px);
+      background-size: 133% 350px;
+      z-index: -1;
+    }
+
+    .zsw-song-detail-content-top-content {
+      width: 850px;
+      margin: 0 auto;
+      height: 100%;
+      padding-top: 20px;
+      display: flex;
+      justify-content: space-between;
+
+      .zsw-song-detail-content-top-left {
+        width: 300px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+
+        .zsw-song-detail-content-top-left-round {
+          margin-top: 50px;
+          height: 300px;
+          padding: 10px;
+          border-radius: 150px;
+          background-color: rgba($color: black, $alpha: .1);
+          box-shadow: 
+            0 0 5px 0 white, 
+            0 0 10px 5px white, 
+            0 0 15px 5px white;
+          $an1: (transform: rotate(0deg));
+          $an2: (transform: rotate(360deg));
+          $merge: (0%: $an1, 100%: $an2);
+          @include keyframes(spin, $merge);
+          @include animation(spin 10s linear infinite paused);
+          &.spin {
+            @include animation(spin 10s linear infinite running);
+          }
+          img {
+            width: 280px;
+            border-radius: 140px;
+          }
+        }
+
+        .zsw-song-detail-content-top-left-tags {
+          list-style: none;
+          padding: 0;
+          margin: 0;
+          display: flex;
+          justify-content: space-between;
+          li {
+            display: inline-block;
+            text-align: center;
+            font-size: .8rem;
+            border: 1px solid #8B8B7A;
+            padding: 3px 10px;
+            border-radius: 5px;
+            background-color: rgba($color: white, $alpha:.2);
+            cursor: pointer;
+
+            &:hover {
+              background-color: #fff;
+            }
+            .anticon {
+              margin-right: 3px;
+              font-size: 1rem;
+              color: #8B8B7A;
+            }
+
+            &:first-child {
+              .anticon {
+                color: red;
+              }
+            }
+          }
+        }
+      }
+
+      .zsw-song-detail-content-top-right {
+        width: 450px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        
+        h3 {
+          color: #363636;
+          height: 30px;
+          line-height: 30px;
+
+          >.shrink {
+            font-size: 1.3rem;
+            float: right;
+            border: 1px solid #ccc;
+            padding: 3px;
+            color: #4F4F4F;
+            cursor: pointer;
+          }
+        }
+
+        .zsw-song-detail-content-top-right-detail {
+          height: 20px;
+          line-height: 20px;
+          font-size: .8rem;
+          span {
+            color: transparentize($color: #40a9ff, $amount: .4);
+            cursor: pointer;
+            &:hover {
+              color: #096dd9;
+            }
+            margin-left: 5px;
+
+            &:first-child {
+              margin-right: 15px;
+            }
+          }
+        }
+
+        .zsw-song-detail-content-top-right-alia {
+          font-size: .9rem;
+          height: 20px;
+          line-height: 20px;
+        }
+
+        .zsw-song-detail-content-top-right-scroll {
+          height: 330px;
+          overflow: scroll;
+          scroll-behavior: smooth;
+          &::-webkit-scrollbar{
+            width:10px;
+            height:10px;
+          }
+          &::-webkit-scrollbar-track{
+            border-radius:2px;
+            border-right: 1px solid #ccc;
+          }
+          &::-webkit-scrollbar-thumb{
+            background: #bfbfbf;
+            border-radius:10px;
+          }
+          &::-webkit-scrollbar-thumb:hover{
+            background: transparentize($color: #bfbfbf, $amount: .2);
+          }
+          &::-webkit-scrollbar-corner{
+            background: none;
+          }
+          >div {
+            line-height: 40px;
+            > p {
+              // font-size: ;
+              margin: 0;
+              padding: 0;
+              min-height: 40px;
+              color: #363636;
+
+              &.active {
+                color: white;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .zsw-song-detail-content-bottom {
+    display: flex;
+    width: 850px;
+    margin: 0 auto;
+    justify-content: space-between;
+    margin-top: 100px;
+    .zsw-song-detail-content-bottom-title {
+      padding-bottom: 10px;
+      border-bottom: 1px solid #ccc;
+      margin-bottom: 30px;
+      font-size: 1.2rem;
+    }
+    .zsw-song-detail-content-bottom-left {
+      width: 500px;
+      >.zsw-comments {
+        padding: 0;
+      }
+    }
+    .zsw-song-detail-content-bottom-right {
+      width: 230px;
+    }
+  }
+}

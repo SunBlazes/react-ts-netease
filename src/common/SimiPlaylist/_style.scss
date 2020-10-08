@@ -1,0 +1,59 @@
+.simi-playlist {
+  margin-top: -10px;
+  .simi-playlist-item {
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    position: relative;
+    padding: 5px 0;
+
+    &:hover::after {
+      display: block;
+    }
+
+    .simi-playlist-item-left {
+      width: 40px;
+      height: 40px;
+      img {
+        width: 100%;
+      }
+    }
+
+    .simi-playlist-item-right {
+      width: 190px;
+      padding-left: 10px;
+
+      p {
+        width: 150px;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+        padding: 0;
+        margin: 0;
+        line-height: 20px;
+        height: 20px;
+        &.simi-playlist-item-right-playcount {
+          color: #8B8B7A;
+        }
+        font-size: .8rem;
+      }
+    }
+
+    &::after {
+      content: '';
+      position: absolute;
+      background-color: rgba(0,0,0,.09);
+      left: 0;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      z-index: -1;
+      display: none;
+    }
+  }
+
+  .simi-playlist-loading {
+    @include animation(spin 1s linear);
+  }
+}

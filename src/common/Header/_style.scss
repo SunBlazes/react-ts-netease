@@ -1,0 +1,92 @@
+.header {
+  height: $header-height;
+  background-color: $dot-active-color;
+  overflow: hidden;
+
+  .header-inner {
+    height: $height-inner-height;
+    margin: $header-inner-margin-y $header-inner-margin-x;
+
+    .logo {
+      display: flex;
+      float: left;
+      align-items: center;
+      color: white;
+      height: 100%;
+      .iconfont {
+        margin-right: .5rem;
+        font-size: 1.7rem;
+      }
+      .name {
+        font-size: 1.2rem;
+      }
+    }
+
+    .navigators {
+      float: left;
+      margin-left: 100px;
+      display: flex;
+      height: 100%;
+      align-items: center;
+
+      > div {
+        border-width: 1px;
+        border-style: solid;
+        border-color: rgba($color: #000000, $alpha: .2);
+        padding: 0 5px;
+        color: rgba($color: white, $alpha: .4);
+
+        &.able {
+          cursor: pointer;
+          color: white;
+        }
+      }
+    }
+  }
+
+  .user {
+    float: right;
+    display: flex;
+    align-items: center;
+    height: 100%;
+
+    .user-img {
+      width: 30px;
+      height: 30px;
+      border-radius: 15px;
+      background-color: #fff;
+      cursor: pointer;
+      overflow: hidden;
+      > * {
+        width: 30px;
+        height: 30px;
+      }
+      .user-icon {
+        font-size: 1.3rem;
+        line-height: 30px;
+        color: grey;
+      }
+    }
+
+    .user-state {
+      font-size: .7rem;
+      margin-left: .5rem;
+      width: 50px;
+      cursor: pointer;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+
+      &.user-offline {
+        color: grey;
+        &:hover {
+          color: white;
+        }
+      }
+
+      &.user-online {
+        color: white;
+      }
+    }
+  }
+}
