@@ -3,14 +3,11 @@
   top: 0;
   left: 0;
   right: 0;
-  height: 814px;
-  visibility: hidden;
-  overflow-y: hidden;
-  @extend %scroll-bar;
+  bottom: 0;
+  display: none;
 
   &.show {
-    visibility: visible;
-    overflow-y: visible;
+    display: block;
   }
 
   .total-singer-rank-title {

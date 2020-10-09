@@ -1,13 +1,11 @@
 .playlist {
-  position: fixed;
-  top: 56px;
-  left: 200px;
-  height: 821px;
+  position: absolute;
+  left: 0;
+  bottom: 0;
   right: 0;
   z-index: 1001;
+  top: 0;
   background-color: snow;
-  overflow-y: scroll;
-  @extend %scroll-bar;
 
   &.hidden {
     display: none;

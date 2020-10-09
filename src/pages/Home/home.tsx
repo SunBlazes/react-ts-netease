@@ -51,7 +51,7 @@ const Home: React.FC<HomeProps> = (props) => {
   const [playlistId, setPlaylistId] = useState("");
   const [singerId, setSingerId] = useState("");
   const [mvId, setMVId] = useState("");
-  /* const scrollTopMap = useRef(
+  const scrollTopMap = useRef(
     new Map<showOfType, number>([
       ["playlist", 0],
       ["songDetailContent", 0],
@@ -65,7 +65,7 @@ const Home: React.FC<HomeProps> = (props) => {
       ["songDetailContent", 0],
       ["singerDetail", 0]
     ])
-  ); */
+  );
 
   const passedPlaylistContextValue: IPlaylistContext = {
     changePlaylistId
@@ -96,25 +96,24 @@ const Home: React.FC<HomeProps> = (props) => {
     setCurrent(key);
   }
 
-  // useEffect(() => {
-  //   const el = document.getElementsByClassName("home-content")[0];
-  //   const map = scrollTopMap.current;
+  useEffect(() => {
+    const el = document.getElementsByClassName("home-content")[0];
+    const map = scrollTopMap.current;
 
-  //   if (el) {
-  //     setTimeout(() => {
-  //       el.scroll({ top: map.get(currType as showOfType) });
-  //     });
-  //   }
-  //   return () => {
-  //     map.set(currType as showOfType, el.scrollTop);
-  //   };
-  // }, [currType]);
+    if (el) {
+      setTimeout(() => {
+        el.scroll({ top: map.get(currType as showOfType) });
+      });
+    }
+    return () => {
+      map.set(currType as showOfType, el.scrollTop);
+    };
+  }, [currType]);
 
   return (
     <div className="home">
       <Header />
       <SignIn />
-      <PlayList id={playlistId} />
       <Layout style={{ overflow: "hidden" }}>
         <Layout.Sider className="home-sider">
           <Menu selectedKeys={[current]} onClick={handleItemClick}>
@@ -148,6 +147,7 @@ const Home: React.FC<HomeProps> = (props) => {
           </PlaylistContext.Provider>
           {moreCommentsShow && <MoreComments />}
           <MV id={mvId} />
+          <PlayList id={playlistId} />
         </Layout.Content>
       </Layout>
       <Layout.Footer className="home-footer">
