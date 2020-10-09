@@ -94,7 +94,6 @@ const PlayList: React.FC<PlaylistProps> = (props) => {
 
     if (props.id) {
       setInfo(undefined);
-      setDetail(undefined);
       fetchPlaylistInfo(props.id);
     }
   }, [props.id]);
@@ -105,7 +104,7 @@ const PlayList: React.FC<PlaylistProps> = (props) => {
         <div>
           <div className="playlist-top">
             <div className="cover-image ">
-              <img src={detail?.coverImgUrl} alt="" />
+              {detail && <img src={detail.coverImgUrl} alt="" />}
             </div>
             {detail && detail.description && (
               <div className="collapse">

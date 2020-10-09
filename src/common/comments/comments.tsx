@@ -133,7 +133,6 @@ const Commets: React.FC<CommentsProps> = (props) => {
 
     async function fetchComments() {
       setLoading(true);
-      console.log(fetchUrl(id, type));
       const { data } = await axios.get(fetchUrl(id, type));
       console.log(data);
       if (queryParams.page === 0) {
