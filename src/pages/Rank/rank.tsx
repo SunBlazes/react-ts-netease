@@ -92,43 +92,45 @@ const Rank: React.FC<RankProps> = (props) => {
 
   return (
     <div className={classes}>
-      {loading ? (
-        <div className="total-rank-loading">
-          <LoadingOutlined />
-          载入中...
-        </div>
-      ) : (
-        <div className="total-ranks-inner">
-          <div className="official-rank">
-            <div className="total-ranks-title">官方榜</div>
-            <div className="official-rank-content">
-              {officialRankData.map((item) => {
-                return (
-                  <OfficialRankItem
-                    {...item}
-                    key={item.id}
-                    onClick={() => handleItemClick(item.id, item.type)}
-                  />
-                );
-              })}
+      <div>
+        {loading ? (
+          <div className="total-rank-loading">
+            <LoadingOutlined />
+            载入中...
+          </div>
+        ) : (
+          <div className="total-ranks-inner">
+            <div className="official-rank">
+              <div className="total-ranks-title">官方榜</div>
+              <div className="official-rank-content">
+                {officialRankData.map((item) => {
+                  return (
+                    <OfficialRankItem
+                      {...item}
+                      key={item.id}
+                      onClick={() => handleItemClick(item.id, item.type)}
+                    />
+                  );
+                })}
+              </div>
+            </div>
+            <div className="global-rank">
+              <div className="total-ranks-title">全球榜</div>
+              <div className="global-rank-content">
+                {globalRankData.map((data) => {
+                  return (
+                    <PlaylistItem
+                      {...data}
+                      key={data.id}
+                      onClick={() => handleItemClick(data.id)}
+                    />
+                  );
+                })}
+              </div>
             </div>
           </div>
-          <div className="global-rank">
-            <div className="total-ranks-title">全球榜</div>
-            <div className="global-rank-content">
-              {globalRankData.map((data) => {
-                return (
-                  <PlaylistItem
-                    {...data}
-                    key={data.id}
-                    onClick={() => handleItemClick(data.id)}
-                  />
-                );
-              })}
-            </div>
-          </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 };

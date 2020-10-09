@@ -5,6 +5,7 @@ interface SingerDetailProps {
 
 interface SingerAlbumProps {
   id: string;
+  show: boolean;
 }
 
 interface SingerAlbumDetailProps {
@@ -43,4 +44,43 @@ interface IAlbumInfo {
   id: string;
   title: string;
   picUrl: string;
+}
+
+interface SingerInfoProps {
+  id: string;
+  show: boolean;
+}
+
+interface ISingerDesc {
+  title: string;
+  content: string;
+}
+
+interface SingerMVProps {
+  id: string;
+  show: boolean;
+  changeShow: (currType: showOfType) => void;
+}
+
+interface ISingerMVItem {
+  id: string;
+  name: string;
+  picUrl: string;
+  duration: string;
+  playCount: string;
+}
+
+interface SingerMVItemProps extends ISingerMVItem {
+  onClick: () => void;
+}
+
+interface SimiSingersProps {
+  id: string;
+  show: boolean;
+}
+
+interface ISimiSingerItem {
+  picUrl: string;
+  id: string;
+  name: string;
 }

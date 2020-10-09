@@ -96,7 +96,12 @@
     padding: 20px 30px;
   }
 
-  .zsw-singer-album-detail {
+  .zsw-singer-album {
+    display: none;
+    &.show {
+      display: block;
+    }
+    .zsw-singer-album-detail {
     overflow: hidden;
     margin-bottom: 30px;
     .zsw-singer-album-detail-right {
@@ -152,6 +157,22 @@
       }
     }
   }
+  }
+  
+  .zsw-singer-info {
+    display: none;
+    &.show {
+      display: block;
+    }
+    > .zsw-singer-info-item {
+      >.title {
+        font-weight: bold;
+      }
+      >.content {
+        text-indent: 2rem;
+      }
+    }
+  }
 
   .zsw-singer-album-item {
     padding: 5px 10px;
@@ -200,6 +221,80 @@
     }
     &:hover, &.selected {
       background-color: rgba($color: #ccc, $alpha: .4);
+    }
+  }
+
+  .zsw-singer-mvs {
+    display: none;
+    &.show {
+      display: block;
+    }
+    >.zsw-singer-mvs-loading {
+      text-align: center;
+    }
+    .zsw-singer-mv-item {
+      width: 160px;
+      height: 150px;
+      display: inline-block;
+      cursor: pointer;
+      margin: 0 20px;
+      >div {
+        position: relative;
+        height: 90px;
+        background-color: rgba($color: $theme-color, $alpha: .4);
+        >img {
+          width: 100%;
+        }
+        >.duration, >.play-count {
+          position: absolute;
+          color: white;
+          font-size: .9rem;
+        }
+        >.play-count {
+          right: 5px;
+          top: 0px;
+          >.anticon {
+            margin-right: 3px;
+          }
+        }
+        >.duration {
+          left: 5px;
+          bottom: 0;
+        }
+      }
+      >p {
+        margin: 0;
+        padding: 0;
+        width: 160px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+    }
+  }
+
+  .zsw-simi-singers {
+    display: none;
+    &.show {
+      display: block;
+    }
+    .zsw-simi-singer-item {
+      cursor: pointer;
+      display: inline-block;
+      width: 122px;
+      height: 150px;
+      margin: 0 15px;
+      >div {
+        height: 122px;
+        >img {
+          width: 100%;
+        }
+        border: 1px solid #ccc;
+      }
+      > p {
+        text-align: center;
+        font-size: .9rem;
+      }
     }
   }
 }

@@ -1,8 +1,16 @@
 .total-ranks {
-  display: none;
+  visibility: hidden;
+  overflow-y: hidden;
+  height: 814px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  @extend %scroll-bar;
 
   &.show {
-    display: block;
+    visibility: visible;
+    overflow-y: visible;
   }
 
   .total-rank-loading {

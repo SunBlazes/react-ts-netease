@@ -1,8 +1,16 @@
 .total-singer-rank {
-  display: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 814px;
+  visibility: hidden;
+  overflow-y: hidden;
+  @extend %scroll-bar;
 
   &.show {
-    display: block;
+    visibility: visible;
+    overflow-y: visible;
   }
 
   .total-singer-rank-title {

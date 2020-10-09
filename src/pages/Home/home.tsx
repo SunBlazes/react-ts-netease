@@ -12,6 +12,7 @@ import { connect } from "react-redux";
 import { UnionStateTypes } from "../../store";
 import PlayList from "../PlayList";
 import SingerDetail from "../SingerDetail";
+import MV from "../MV";
 
 type currentType = "recommend";
 
@@ -28,6 +29,10 @@ export interface ISingerDetailContext {
   changeSingerId: (id: string) => void;
 }
 
+export interface IMVContext {
+  changeMVId: (id: string) => void;
+}
+
 export const PlaylistContext = createContext<IPlaylistContext>({
   changePlaylistId: () => {}
 });
@@ -36,12 +41,17 @@ export const SingerDetailContext = createContext<ISingerDetailContext>({
   changeSingerId: () => {}
 });
 
+export const MVContext = createContext<IMVContext>({
+  changeMVId: () => {}
+});
+
 const Home: React.FC<HomeProps> = (props) => {
   const { moreCommentsShow, currType } = props;
   const [current, setCurrent] = useState<currentType>("recommend");
   const [playlistId, setPlaylistId] = useState("");
   const [singerId, setSingerId] = useState("");
-  const scrollTopMap = useRef(
+  const [mvId, setMVId] = useState("");
+  /* const scrollTopMap = useRef(
     new Map<showOfType, number>([
       ["playlist", 0],
       ["songDetailContent", 0],
@@ -55,7 +65,7 @@ const Home: React.FC<HomeProps> = (props) => {
       ["songDetailContent", 0],
       ["singerDetail", 0]
     ])
-  );
+  ); */
 
   const passedPlaylistContextValue: IPlaylistContext = {
     changePlaylistId
@@ -63,6 +73,10 @@ const Home: React.FC<HomeProps> = (props) => {
 
   const passedSingerContextValue: ISingerDetailContext = {
     changeSingerId
+  };
+
+  const passedMVContext: IMVContext = {
+    changeMVId
   };
 
   function changePlaylistId(id: string) {
@@ -73,30 +87,35 @@ const Home: React.FC<HomeProps> = (props) => {
     setSingerId(id);
   }
 
+  function changeMVId(id: string) {
+    setMVId(id);
+  }
+
   function handleItemClick(e: MenuInfo) {
     const key = e.key as currentType;
     setCurrent(key);
   }
 
-  useEffect(() => {
-    const el = document.getElementsByClassName("home-content")[0];
-    const map = scrollTopMap.current;
+  // useEffect(() => {
+  //   const el = document.getElementsByClassName("home-content")[0];
+  //   const map = scrollTopMap.current;
 
-    if (el) {
-      setTimeout(() => {
-        el.scroll({ top: map.get(currType as showOfType) });
-      });
-    }
-    return () => {
-      map.set(currType as showOfType, el.scrollTop);
-    };
-  }, [currType]);
+  //   if (el) {
+  //     setTimeout(() => {
+  //       el.scroll({ top: map.get(currType as showOfType) });
+  //     });
+  //   }
+  //   return () => {
+  //     map.set(currType as showOfType, el.scrollTop);
+  //   };
+  // }, [currType]);
 
   return (
     <div className="home">
       <Header />
       <SignIn />
-      <Layout>
+      <PlayList id={playlistId} />
+      <Layout style={{ overflow: "hidden" }}>
         <Layout.Sider className="home-sider">
           <Menu selectedKeys={[current]} onClick={handleItemClick}>
             <Menu.ItemGroup title="推荐">
@@ -122,11 +141,13 @@ const Home: React.FC<HomeProps> = (props) => {
           <PlaylistContext.Provider value={passedPlaylistContextValue}>
             <SingerDetailContext.Provider value={passedSingerContextValue}>
               <SearchMusic />
+              <MVContext.Provider value={passedMVContext}>
+                <SingerDetail id={singerId} />
+              </MVContext.Provider>
             </SingerDetailContext.Provider>
-            <SingerDetail id={singerId} />
           </PlaylistContext.Provider>
-          <PlayList id={playlistId} />
           {moreCommentsShow && <MoreComments />}
+          <MV id={mvId} />
         </Layout.Content>
       </Layout>
       <Layout.Footer className="home-footer">

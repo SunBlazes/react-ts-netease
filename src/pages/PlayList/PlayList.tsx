@@ -102,81 +102,83 @@ const PlayList: React.FC<PlaylistProps> = (props) => {
   return (
     <>
       <div className={`${playlistShow ? "playlist" : "playlist hidden"}`}>
-        <div className="playlist-top">
-          <div className="cover-image ">
-            <img src={detail?.coverImgUrl} alt="" />
-          </div>
-          {detail && detail.description && (
-            <div className="collapse">
-              {collapse ? (
-                <DownOutlined onClick={() => setCollapse(false)} />
-              ) : (
-                <UpOutlined onClick={() => setCollapse(true)} />
+        <div>
+          <div className="playlist-top">
+            <div className="cover-image ">
+              <img src={detail?.coverImgUrl} alt="" />
+            </div>
+            {detail && detail.description && (
+              <div className="collapse">
+                {collapse ? (
+                  <DownOutlined onClick={() => setCollapse(false)} />
+                ) : (
+                  <UpOutlined onClick={() => setCollapse(true)} />
+                )}
+              </div>
+            )}
+            <div className="playlist-detail">
+              <div className="playlist-detail-panel-1">
+                <div style={{ float: "left" }}>
+                  <span className="tag">歌单</span>
+                  <span className="content">{detail?.name}</span>
+                </div>
+              </div>
+              <div className="playlist-detail-panel-2">
+                <img src={detail?.avatarUrl} alt="" />
+                <span className="nickname">{detail?.nickname}</span>
+                <span className="createTime">
+                  {detail?.createTime &&
+                    parseDate("YYYY-mm-dd", detail.createTime)}
+                  创建
+                </span>
+              </div>
+              <div className="playlist-detail-panel-3">
+                <div className="btn">
+                  <PlayCircleOutlined />
+                  播放全部
+                </div>
+                <div className="btn">
+                  <FolderAddOutlined />
+                  收藏{`(${detail ? detail.subscribedCount : 0})`}
+                </div>
+                <div className="btn">
+                  <ShareAltOutlined />
+                  分享{`(${detail ? detail.shareCount : 0})`}
+                </div>
+                <div className="btn">
+                  <DownloadOutlined />
+                  下载全部
+                </div>
+              </div>
+              {detail && detail.tags && (
+                <div className="playlist-detail-panel-4">
+                  标签:
+                  {detail.tags.map((tag) => {
+                    return <span key={tag}>{tag}</span>;
+                  })}
+                </div>
+              )}
+              {detail && detail.description && (
+                <div
+                  className={`playlist-detail-panel-5 ${
+                    collapse ? "collapsed" : ""
+                  }`}
+                >
+                  简介:
+                  {detail.description.trim()}
+                </div>
               )}
             </div>
-          )}
-          <div className="playlist-detail">
-            <div className="playlist-detail-panel-1">
-              <div style={{ float: "left" }}>
-                <span className="tag">歌单</span>
-                <span className="content">{detail?.name}</span>
-              </div>
+            <div className="right">
+              <FireFilled style={{ marginRight: 10 }} />
+              {detail?.trackCount}
+              <PlayCircleOutlined style={{ margin: "0 10px" }} />
+              {detail?.playCount && parsePlayCount(detail.playCount)}
             </div>
-            <div className="playlist-detail-panel-2">
-              <img src={detail?.avatarUrl} alt="" />
-              <span className="nickname">{detail?.nickname}</span>
-              <span className="createTime">
-                {detail?.createTime &&
-                  parseDate("YYYY-mm-dd", detail.createTime)}
-                创建
-              </span>
-            </div>
-            <div className="playlist-detail-panel-3">
-              <div className="btn">
-                <PlayCircleOutlined />
-                播放全部
-              </div>
-              <div className="btn">
-                <FolderAddOutlined />
-                收藏{`(${detail ? detail.subscribedCount : 0})`}
-              </div>
-              <div className="btn">
-                <ShareAltOutlined />
-                分享{`(${detail ? detail.shareCount : 0})`}
-              </div>
-              <div className="btn">
-                <DownloadOutlined />
-                下载全部
-              </div>
-            </div>
-            {detail && detail.tags && (
-              <div className="playlist-detail-panel-4">
-                标签:
-                {detail.tags.map((tag) => {
-                  return <span key={tag}>{tag}</span>;
-                })}
-              </div>
-            )}
-            {detail && detail.description && (
-              <div
-                className={`playlist-detail-panel-5 ${
-                  collapse ? "collapsed" : ""
-                }`}
-              >
-                简介:
-                {detail.description.trim()}
-              </div>
-            )}
           </div>
-          <div className="right">
-            <FireFilled style={{ marginRight: 10 }} />
-            {detail?.trackCount}
-            <PlayCircleOutlined style={{ margin: "0 10px" }} />
-            {detail?.playCount && parsePlayCount(detail.playCount)}
+          <div className="playlist-bottom">
+            {info && <PlaylistInfo {...info} />}
           </div>
-        </div>
-        <div className="playlist-bottom">
-          {info && <PlaylistInfo {...info} />}
         </div>
       </div>
     </>

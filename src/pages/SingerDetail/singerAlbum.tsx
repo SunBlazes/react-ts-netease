@@ -1,52 +1,54 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import SingerAlbumDetail from "./singerAlbumDetail";
 import axios from "../../network";
-
-interface IQueryParams {
-  offset: number;
-  more: boolean;
-  limit: number;
-}
+import classnames from "classnames";
 
 const SingerAlbum: React.FC<SingerAlbumProps> = (props) => {
-  const { id } = props;
+  const { id, show } = props;
   const [albums, setAlbums] = useState<IAlbumInfo[]>([]);
-  const [queryParams, setQueryParams] = useState<IQueryParams>({
-    offset: 0,
-    more: true,
-    limit: 10
+  const more = useRef(true);
+  const [offset, setOffset] = useState(0);
+  const classes = classnames("zsw-singer-album", {
+    show
   });
+  const [firstRequest, setFirstRequest] = useState(false);
+
+  useEffect(() => {
+    if (show) {
+      setFirstRequest(true);
+    }
+  }, [show]);
+
+  useEffect(() => {
+    more.current = true;
+    setAlbums([]);
+    setOffset(0);
+  }, [id]);
 
   useEffect(() => {
     let isUnmount = false;
     function handleScroll(e: Event) {
       const target = e.target as HTMLDivElement;
-      if (!queryParams.more) {
+      if (!more.current) {
         el.removeEventListener("scroll", handleScroll);
       }
       if (
         target.scrollTop >= target.scrollHeight - target.offsetHeight &&
         target.scrollTop > 0
       ) {
-        !isUnmount &&
-          setQueryParams((data) => {
-            const { limit, more, offset } = data;
-            return {
-              limit,
-              offset: offset + limit,
-              more
-            };
-          });
+        !isUnmount && setOffset((offset) => offset + 15);
       }
     }
     const el = document.getElementsByClassName("home-content")[0];
-    el.addEventListener("scroll", handleScroll);
+    if (show) {
+      el.addEventListener("scroll", handleScroll);
+    }
 
     return () => {
       isUnmount = true;
       el.removeEventListener("scroll", handleScroll);
     };
-  }, [queryParams.more]);
+  }, [show]);
 
   useEffect(() => {
     let isUnmount = false;
@@ -66,37 +68,30 @@ const SingerAlbum: React.FC<SingerAlbumProps> = (props) => {
     }
 
     function returnUrl() {
-      return `/artist/album?id=${id}&offset=${queryParams.offset}&limit=${queryParams.limit}`;
+      return `/artist/album?id=${id}&offset=${offset}&limit=${15}`;
     }
 
     async function fetchData() {
       const { data } = await axios.get(returnUrl());
       if (!isUnmount) {
-        setQueryParams((_data) => {
-          const { offset, limit } = _data;
-          return {
-            offset,
-            limit,
-            more: data.more
-          };
+        more.current = data.more;
+        setAlbums((_data) => {
+          return _data.concat(parseAlbums(data.hotAlbums));
         });
       }
-      setAlbums((_data) => {
-        return _data.concat(parseAlbums(data.hotAlbums));
-      });
     }
 
-    if (id && queryParams.more) {
+    if (id && more.current && firstRequest) {
       fetchData();
     }
 
     return () => {
       isUnmount = true;
     };
-  }, [id, queryParams.offset, queryParams.more, queryParams.limit]);
+  }, [id, offset, firstRequest]);
 
   return (
-    <div className="zsw-singer-album">
+    <div className={classes}>
       <SingerAlbumDetail id={id} title="热门50首" top50={true} />
       {albums.map((item) => {
         return (

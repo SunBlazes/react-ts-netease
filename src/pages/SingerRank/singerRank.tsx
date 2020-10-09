@@ -80,68 +80,70 @@ const SingerRank: React.FC<SingerRankProps> = (props) => {
 
   return (
     <div className={classes}>
-      <div className="total-singer-rank-title">云音乐歌手榜</div>
-      <div className="total-singer-rank-tab">
-        <div
-          className={`total-singer-rank-tab-item ${
-            currType === "华语" ? "selected" : ""
-          }`}
-          onClick={() => hanldeTabItemClick("华语")}
-        >
-          华语
-        </div>
-        <div
-          className={`total-singer-rank-tab-item ${
-            currType === "欧美" ? "selected" : ""
-          }`}
-          onClick={() => hanldeTabItemClick("欧美")}
-        >
-          欧美
-        </div>
-        <div
-          className={`total-singer-rank-tab-item ${
-            currType === "韩国" ? "selected" : ""
-          }`}
-          onClick={() => hanldeTabItemClick("韩国")}
-        >
-          韩国
-        </div>
-        <div
-          className={`total-singer-rank-tab-item ${
-            currType === "日本" ? "selected" : ""
-          }`}
-          onClick={() => hanldeTabItemClick("日本")}
-        >
-          日本
-        </div>
-        {updateTime && (
-          <div className="total-singer-rank-tab-updateTime">
-            <span>更新时间:</span>
-            {parseDate("mm月dd日", updateTime)}
+      <div>
+        <div className="total-singer-rank-title">云音乐歌手榜</div>
+        <div className="total-singer-rank-tab">
+          <div
+            className={`total-singer-rank-tab-item ${
+              currType === "华语" ? "selected" : ""
+            }`}
+            onClick={() => hanldeTabItemClick("华语")}
+          >
+            华语
           </div>
-        )}
-      </div>
-      <div className="total-singer-rank-content">
-        {loading ? (
-          <div className="total-singer-rank-content-loading">
-            <LoadingOutlined />
-            载入中
+          <div
+            className={`total-singer-rank-tab-item ${
+              currType === "欧美" ? "selected" : ""
+            }`}
+            onClick={() => hanldeTabItemClick("欧美")}
+          >
+            欧美
           </div>
-        ) : (
-          <div>
-            {singerData.map((item, index) => {
-              return (
-                <SingerRankItem
-                  key={item.id}
-                  {...item}
-                  index={index}
-                  totalScore={totalScore.current}
-                  onClick={() => handleRankItemClick(item.id)}
-                />
-              );
-            })}
+          <div
+            className={`total-singer-rank-tab-item ${
+              currType === "韩国" ? "selected" : ""
+            }`}
+            onClick={() => hanldeTabItemClick("韩国")}
+          >
+            韩国
           </div>
-        )}
+          <div
+            className={`total-singer-rank-tab-item ${
+              currType === "日本" ? "selected" : ""
+            }`}
+            onClick={() => hanldeTabItemClick("日本")}
+          >
+            日本
+          </div>
+          {updateTime && (
+            <div className="total-singer-rank-tab-updateTime">
+              <span>更新时间:</span>
+              {parseDate("mm月dd日", updateTime)}
+            </div>
+          )}
+        </div>
+        <div className="total-singer-rank-content">
+          {loading ? (
+            <div className="total-singer-rank-content-loading">
+              <LoadingOutlined />
+              载入中
+            </div>
+          ) : (
+            <div>
+              {singerData.map((item, index) => {
+                return (
+                  <SingerRankItem
+                    key={item.id}
+                    {...item}
+                    index={index}
+                    totalScore={totalScore.current}
+                    onClick={() => handleRankItemClick(item.id)}
+                  />
+                );
+              })}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

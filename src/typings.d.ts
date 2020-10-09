@@ -30,7 +30,8 @@ type showOfType =
   | "singer"
   | "singerRank"
   | "songDetailContent"
-  | "singerDetail";
+  | "singerDetail"
+  | "mv";
 
 declare interface ShowOfTypeLinkedItem {
   currType: showOfType;

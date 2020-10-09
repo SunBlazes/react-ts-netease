@@ -6,9 +6,11 @@ import axios from "../../network";
 import { FolderAddOutlined } from "@ant-design/icons";
 import SingerAlbum from "./singerAlbum";
 import classnames from "classnames";
+import SingerInfo from "./singerInfo";
+import SingerMV from "./singerMV";
+import SimiSingers from "./simiSingers";
 
 type currentType = "album" | "mv" | "singerInfo" | "simiSinger";
-
 const SingerDetail: React.FC<SingerDetailProps> = (props) => {
   const { show, id } = props;
   const [songsCount, setSongsCount] = useState(0);
@@ -19,23 +21,13 @@ const SingerDetail: React.FC<SingerDetailProps> = (props) => {
   const classes = classnames("zsw-singer-detail", {
     hidden: !show
   });
+
   function itemClick(curr: currentType) {
     setCurrent(curr);
   }
 
   useEffect(() => {
-    let isUnmount = false;
-    if (!isUnmount) {
-      setSongsCount(0);
-      setAlbumsCount(0);
-      setSingerName("");
-      setPicUrl("");
-      setCurrent("album");
-    }
-
-    return () => {
-      isUnmount = true;
-    };
+    setCurrent("album");
   }, [id]);
 
   useEffect(() => {
@@ -136,7 +128,10 @@ const SingerDetail: React.FC<SingerDetailProps> = (props) => {
             </li>
           </ul>
           <div className="zsw-singer-detail-content">
-            <SingerAlbum id={id} />
+            <SingerAlbum id={id} show={current === "album"} />
+            <SingerInfo id={id} show={current === "singerInfo"} />
+            <SingerMV id={id} show={current === "mv"} />
+            <SimiSingers id={id} show={current === "simiSinger"} />
           </div>
         </div>
       </div>

@@ -1,4 +1,4 @@
-type commentType = "music" | "playlist";
+type commentType = "music" | "playlist" | "mv";
 
 interface CommentsProps {
   type: commentType;

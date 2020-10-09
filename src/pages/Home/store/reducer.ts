@@ -12,7 +12,8 @@ const defaultState: HomeStoreStateProps = {
     ["singer", false],
     ["singerRank", false],
     ["songDetailContent", false],
-    ["singerDetail", false]
+    ["singerDetail", false],
+    ["mv", false]
   ]),
   currLinkedItem: {
     currType: "recommend"
