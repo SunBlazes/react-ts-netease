@@ -10,6 +10,10 @@
   &.hidden {
     display: none;
   }
+
+  > div {
+    background-color: snow;
+  }
 }
 
 .playlist-top {

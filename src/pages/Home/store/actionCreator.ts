@@ -19,3 +19,12 @@ export const getToggleTypeShowAction = (
     callback
   };
 };
+
+export const getRemoveTypeShowAction = (
+  showType: showOfType
+): types.HomeActionTypes => {
+  return {
+    type: types.REMOVE_TYPE_SHOW,
+    showType
+  };
+};

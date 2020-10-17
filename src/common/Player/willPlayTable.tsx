@@ -2,7 +2,12 @@ import React from "react";
 import { Table } from "antd";
 import { connect } from "react-redux";
 import { UnionStateTypes } from "../../store";
-import { fetchPlayUrl, getChangePlayIndexAction } from "./store";
+import {
+  fetchPlayUrl,
+  getChangePlayIndexAction,
+  getPushPlayQueueAction
+} from "./store";
+import { getRemoveTypeShowAction } from "../../pages/Home/store";
 import { SoundFilled, DeleteOutlined } from "@ant-design/icons";
 
 const WillPLayTable: React.FC<WillPlayTableProps> = (props) => {
@@ -11,7 +16,9 @@ const WillPLayTable: React.FC<WillPlayTableProps> = (props) => {
     fetchPlayUrl,
     changePlayIndex,
     current,
-    playState
+    playState,
+    pushPlayQueue,
+    removeShowType
   } = props;
 
   function hanldeDoubleClick(id: string) {
@@ -19,11 +26,16 @@ const WillPLayTable: React.FC<WillPlayTableProps> = (props) => {
     changePlayIndex(id);
   }
 
+  function clearAll() {
+    pushPlayQueue([]);
+    removeShowType("songDetailContent");
+  }
+
   return (
     <>
       <div className="will-play-list-tips">
         <div className="will-play-list-total">共{willPlayQueue.length}首</div>
-        <div className="will-play-list-clear-all">
+        <div className="will-play-list-clear-all" onClick={clearAll}>
           <DeleteOutlined />
           清空
         </div>
@@ -98,6 +110,12 @@ const mapDispatchToProps = (dispatch: any) => {
     },
     changePlayIndex(id: string) {
       dispatch(getChangePlayIndexAction(id));
+    },
+    pushPlayQueue(ids: string | Array<string>) {
+      dispatch(getPushPlayQueueAction(ids, true));
+    },
+    removeShowType(showType: showOfType) {
+      dispatch(getRemoveTypeShowAction(showType));
     }
   };
 };

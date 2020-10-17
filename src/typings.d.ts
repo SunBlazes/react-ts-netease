@@ -1,7 +1,7 @@
 declare interface UserProps {
   avatarUrl: string;
   nickname: string;
-  userId: string | number;
+  userId: string;
 }
 
 declare interface HeaderStoreStateProps {
@@ -31,12 +31,15 @@ type showOfType =
   | "singerRank"
   | "songDetailContent"
   | "singerDetail"
-  | "mv";
+  | "mv"
+  | "searchResult"
+  | "album";
 
 declare interface ShowOfTypeLinkedItem {
   currType: showOfType;
   prev?: ShowOfTypeLinkedItem;
   next?: ShowOfTypeLinkedItem;
+  id?: number;
 }
 
 declare interface HomeStoreStateProps {
@@ -70,6 +73,7 @@ declare interface PlayerStoreStateProps {
   current: number;
   playState: boolean;
   willPlayQueue: Array<WillPlayItem>;
+  willplaylistId: Array<string>;
 }
 
 declare interface LoginRequestConfig {

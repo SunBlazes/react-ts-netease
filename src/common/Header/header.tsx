@@ -4,12 +4,17 @@ import { UserOutlined, LeftOutlined, RightOutlined } from "@ant-design/icons";
 import { connect } from "react-redux";
 import { UnionStateTypes } from "../../store";
 import { getChangeSignInShowAction } from "../SignIn/store/actionCreator";
-import { getToggleTypeShowAction, direction } from "../../pages/Home/store";
+import {
+  getToggleTypeShowAction,
+  direction,
+  getChangeTypeShowAction
+} from "../../pages/Home/store";
 
 interface HeaderProps extends HeaderStoreStateProps {
   changeSignInShow: (flag: boolean) => void;
   currLinkedItem: ShowOfTypeLinkedItem;
   toggleTypeShow: (direction: direction) => void;
+  changeTypeShow: (type: showOfType) => void;
 }
 
 const Header: React.FC<HeaderProps> = (props) => {
@@ -18,7 +23,8 @@ const Header: React.FC<HeaderProps> = (props) => {
     user,
     changeSignInShow,
     currLinkedItem,
-    toggleTypeShow
+    toggleTypeShow,
+    changeTypeShow
   } = props;
   const { nickname, avatarUrl } = user;
 
@@ -64,6 +70,7 @@ const Header: React.FC<HeaderProps> = (props) => {
         <SearchInput
           style={{ float: "left", marginLeft: "4rem" }}
           placeholder="搜索音乐,歌手,歌词,用户"
+          onSearch={() => changeTypeShow("searchResult")}
         />
         <div className="user" onClick={enterLogin}>
           <span className="user-img">
@@ -102,6 +109,9 @@ const mapDispatchToProps = function (dispatch: any) {
     },
     toggleTypeShow(direction: direction) {
       dispatch(getToggleTypeShowAction(direction));
+    },
+    changeTypeShow(type: showOfType) {
+      dispatch(getChangeTypeShowAction(type));
     }
   };
 };

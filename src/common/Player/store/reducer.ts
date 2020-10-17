@@ -15,7 +15,8 @@ const defaultState: PlayerStoreStateProps = {
   playQueue: [],
   current: -1,
   playState: false,
-  willPlayQueue: []
+  willPlayQueue: [],
+  willplaylistId: []
 };
 
 function clone(state: PlayerStoreStateProps) {
@@ -32,13 +33,23 @@ function clone(state: PlayerStoreStateProps) {
 export default (state = defaultState, action: PlayerActionType) => {
   switch (action.type) {
     case PUSH_PLAY_QUEUE: {
-      const { id, shouldCover } = action;
+      const { id, shouldCover, playlistId } = action;
       const newState = clone(state);
       if (shouldCover) {
         newState.playQueue = [];
         newState.willPlayQueue = [];
+        if (playlistId) {
+          newState.willplaylistId = [playlistId];
+        }
+        newState.willplaylistId = [];
       }
       if (id instanceof Array) {
+        if (id.length === 0) {
+          window.audio.pause();
+          window.audio.src = "";
+          newState.current = -1;
+          newState.playState = false;
+        }
         newState.playQueue.push(...id);
         for (let i = 0; i < id.length; i++) {
           const item = newState.playDetailMap.get(id[i]);
@@ -53,14 +64,23 @@ export default (state = defaultState, action: PlayerActionType) => {
           }
         }
       } else {
-        newState.playQueue.push(id);
+        newState.playQueue.splice(newState.current + 1, 0, id);
+        const item = newState.playDetailMap.get(id);
+        if (item) {
+          const { name, singerName, duration, id } = item;
+          newState.willPlayQueue.splice(newState.current + 1, 0, {
+            name,
+            singerName,
+            duration,
+            id
+          });
+        }
       }
-      console.log(newState);
+      // console.log(newState);
       return newState;
     }
     case SET_PLAY_URL_MAP: {
       const { url, id } = action;
-      console.log(state);
       const newState = clone(state);
       newState.playUrlMap.set(id, url);
       return newState;

@@ -9,6 +9,7 @@ import SingerRank from "../SingerRank";
 import { connect } from "react-redux";
 import { UnionStateTypes } from "../../store";
 import { getChangeTypeShowAction } from "../Home/store/actionCreator";
+import classnames from "classnames";
 
 type currentType =
   | "recommend"
@@ -20,16 +21,20 @@ type currentType =
 interface SearchMusicProps {
   current: currentType;
   changeShow: (currType: showOfType) => void;
+  show: boolean;
 }
 
 const SearchMusic: React.FC<SearchMusicProps> = (props) => {
-  const { current, changeShow } = props;
+  const { current, changeShow, show } = props;
   const [firstRequest, setFirstRequest] = useState({
     recommend: true,
     totalPlaylist: false,
     rank: false,
     singer: false,
     singerRank: false
+  });
+  const classes = classnames("search-music", {
+    hidden: !show
   });
 
   function handleItemClick(e: MenuInfo) {
@@ -63,7 +68,7 @@ const SearchMusic: React.FC<SearchMusicProps> = (props) => {
   }
 
   return (
-    <div className="search-music">
+    <div className={classes}>
       <div className="nav">
         <Menu
           mode="horizontal"
@@ -123,7 +128,6 @@ const mapStateToProps = (
   current: currentType;
 } => {
   const home = state.home;
-  console.log(home);
   return {
     current: home.currLinkedItem.currType as currentType
   };

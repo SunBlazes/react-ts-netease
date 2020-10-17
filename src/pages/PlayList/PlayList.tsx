@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import {
   FireFilled,
   PlayCircleOutlined,
@@ -13,10 +13,13 @@ import PlaylistInfo from "../../common/PlaylistInfo";
 import axios from "../../network";
 import { connect } from "react-redux";
 import { UnionStateTypes } from "../../store";
+import { getPushPlayQueueAction } from "../../common/Player/store";
+import { message } from "antd";
 
 interface PlaylistProps {
   playlistShow: boolean;
   id?: string;
+  pushPlayQueue: (ids: string | Array<string>) => void;
 }
 
 interface IDetail {
@@ -43,8 +46,8 @@ const PlayList: React.FC<PlaylistProps> = (props) => {
   const [info, setInfo] = useState<PlaylistInfoProps>();
   // 歌单描述信息，创作者信息等等
   const [detail, setDetail] = useState<IDetail>();
-
-  const { playlistShow } = props;
+  const isAdded = useRef(false);
+  const { playlistShow, pushPlayQueue } = props;
 
   useEffect(() => {
     function parseSubscriber(subscribers: Array<any>): Array<ISubscriber> {
@@ -86,9 +89,7 @@ const PlayList: React.FC<PlaylistProps> = (props) => {
 
     async function fetchPlaylistInfo(id: string) {
       const { data } = await axios.get("/playlist/detail?id=" + id);
-      console.log(data);
       setDetail(parseDetail(data.playlist));
-      console.log(parseDetail(data.playlist));
       setInfo(parseInfo(data.playlist));
     }
 
@@ -97,6 +98,18 @@ const PlayList: React.FC<PlaylistProps> = (props) => {
       fetchPlaylistInfo(props.id);
     }
   }, [props.id]);
+
+  function pushPlayQueueAll() {
+    if (isAdded.current) {
+      return message.warn({
+        content: "请勿重复添加"
+      });
+    }
+    if (info) {
+      pushPlayQueue(info.trackIds);
+      isAdded.current = true;
+    }
+  }
 
   return (
     <>
@@ -132,9 +145,9 @@ const PlayList: React.FC<PlaylistProps> = (props) => {
                 </span>
               </div>
               <div className="playlist-detail-panel-3">
-                <div className="btn">
+                <div className="btn" onClick={pushPlayQueueAll}>
                   <PlayCircleOutlined />
-                  播放全部
+                  添加全部
                 </div>
                 <div className="btn">
                   <FolderAddOutlined />
@@ -191,4 +204,15 @@ const mapStateToProps = (state: UnionStateTypes) => {
   };
 };
 
-export default connect(mapStateToProps)(React.memo(PlayList));
+const mapDispatchToProps = (dispatch: any) => {
+  return {
+    pushPlayQueue(ids: string | Array<string>) {
+      dispatch(getPushPlayQueueAction(ids, false));
+    }
+  };
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(React.memo(PlayList));

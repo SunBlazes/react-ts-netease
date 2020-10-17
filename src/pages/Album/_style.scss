@@ -1,0 +1,182 @@
+.album {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  z-index: 1001;
+  top: 0;
+  background-color: snow;
+
+  > div {
+    background-color: snow;
+  }
+
+  &.hidden {
+    display: none;
+  }
+
+  > div > .album-top {
+    padding: 20px 40px;
+    overflow: hidden;
+    > .album-top-left {
+      width: 202px;
+      height: 202px;
+      float: left;
+      img {
+        width: 100%;
+      }
+      border: 1px solid #ccc;
+    }
+
+    > .album-top-right {
+      float: left;
+      margin-left: 100px;
+      > .album-panel-1 {
+        > i {
+          font-style: normal;
+          display: inline-block;
+          width: 40px;
+          height: 25px;
+          background-color: $theme-color;
+          text-align: center;
+          line-height: 25px;
+          font-size: .9rem;
+          color: white;
+          border-radius: 3px;
+        }
+        > span {
+          margin-left: 5px;
+          font-size: 1.3rem;
+          font-weight: bold;
+          letter-spacing: 1px;
+          vertical-align: -2px;
+        }
+      }
+      > .album-panel-2 {
+        margin-top: 20px;
+        ul {
+          list-style: none;
+          overflow: hidden;
+          padding: 0;
+          margin: 0;
+          li {
+            cursor: pointer;
+            float: left;
+            margin-right: 10px;
+            padding: 2px 10px;
+            border-radius: 3px;
+            border: 1px solid #ccc;
+            font-size: .9rem;
+            color: rgba($color: #000000, $alpha: .7);
+            >.anticon {
+              margin-right: 5px;
+              font-size: 1rem;
+            }
+            &:hover {
+              background-color: rgba($color: #ccc, $alpha: .2);
+              color: rgba($color: #000000, $alpha: .9);
+            }
+          }
+        }
+        
+      }
+      > .album-panel-3 {
+        margin-top: 20px;
+        * {
+          user-select: none;
+        }
+        p {
+          line-height: 1.2;
+          font-size: .9rem;
+          > span {
+            margin-left: 10px;
+            color: rgba($color: #000000, $alpha: .7);
+
+            &.singer-name {
+              cursor: pointer;
+              &:hover {
+                color: rgba($color: #000000, $alpha: .9);
+              }
+            }
+          }
+        }
+      }
+    }
+
+  }
+
+  > div > .album-nav {
+    padding: 0 30px;
+    list-style: none;
+    overflow: hidden;
+    font-size: 0.6rem;
+    margin-bottom: 0 !important;
+    border-bottom: 1px solid $theme-color;
+    margin-top: 20px;
+    li:not(.search) {
+      padding: 5px 20px;
+      float: left;
+      border: 1px solid #ccc;
+      margin-right: .5rem;
+      cursor: pointer;
+      border-bottom: none;
+  
+      &:hover {
+        background-color: #F5F5F5;
+      }
+  
+      &.sele {
+        background-color: $theme-color;
+        border: 1px solid $theme-color;
+        color: white;
+        border-bottom: none;
+      }
+    }
+  }
+
+  > div > .album-songs {
+    .ant-table-row:hover {
+      .pop {
+        > div {
+          background-color: rgba($color: grey, $alpha: .8);
+        }
+      }
+    }
+    .pop {
+      height: 10px;
+      background-color: rgba($color: grey, $alpha: .2);
+      border-radius: 5px;
+      > div {
+        background-color: rgba($color: grey, $alpha: .4);
+        height: 100%;
+        border-radius: 5px;
+      }
+    }
+    .steer {
+      > .anticon {
+        margin: 0 3px;
+      }
+    }
+    .index {
+      .anticon {
+        color: rgba($color: $theme-color, $alpha: .4);
+        &.play {
+          color: rgba($color: $theme-color, $alpha: .9);
+        }
+      }
+    }
+  }
+
+  > div > .album-info {
+    padding: 30px;
+    .title {
+      font-size: 1.2rem;
+      font-weight: bold;
+      margin-bottom: 20px;
+    }
+    .content {
+      word-break: break-all;
+      text-indent: 2rem;
+    }
+  }
+}

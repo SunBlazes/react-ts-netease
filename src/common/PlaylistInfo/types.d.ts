@@ -3,11 +3,12 @@ interface SongSheetProps extends ISongSheet {
   show: boolean;
   clickAndPushAll?: boolean;
   setPlayDetailMap: (map: Map<string, PlayDetailItem>) => void;
-  pushPlayQueue: (ids: string | Array<string>) => void;
+  pushPlayQueue: (ids: string | Array<string>, playlistId: string) => void;
   fetchPlayUrl: (id: string) => void;
   changePlayIndex: (id: string) => void;
   current: string;
   playState: boolean;
+  willPlaylistId: string[];
 }
 
 interface ISongSheetItem {
@@ -48,4 +49,6 @@ interface WillPlayTableProps {
   changePlayIndex: (id: string) => void;
   current: string;
   playState: boolean;
+  pushPlayQueue: (ids: string | Array<string>) => void;
+  removeShowType: (showType: showOfType) => void;
 }

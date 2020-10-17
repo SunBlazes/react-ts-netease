@@ -6,7 +6,7 @@ import {
   DownloadOutlined,
   SoundFilled
 } from "@ant-design/icons";
-import { parseTime, mergeSingerNames } from "../../../utils";
+import { parseTime, mergeSingerNames, parseCopyright } from "../../../utils";
 import { connect } from "react-redux";
 import {
   getSetPlayDetailMapAction,
@@ -26,13 +26,13 @@ const SongSheet: React.FC<SongSheetProps> = (props) => {
     fetchPlayUrl,
     changePlayIndex,
     current,
-    playState
+    playState,
+    willPlaylistId
   } = props;
   const trackIdsRef = useRef([...trackIds]);
   const [loading, setLoading] = useState(false);
   const [tableData, setTableData] = useState<Array<ISongSheetItem>>([]);
   const tableDataRef = useRef<Array<ISongSheetItem>>();
-  const onlyPushOnce = useRef(false);
 
   useEffect(() => {
     let isUnmount = false;
@@ -43,12 +43,14 @@ const SongSheet: React.FC<SongSheetProps> = (props) => {
         ar,
         id,
         dt,
-        noCopyrightRcmd
+        noCopyrightRcmd,
+        fee
       } = song;
       // const {
       //   data: { success }
       // } = await axios.get(`/check/music?id=${id}`);
-      if (!noCopyrightRcmd) {
+      const copyright = parseCopyright(noCopyrightRcmd, fee);
+      if (copyright) {
         trackids.push(id);
       }
       return {
@@ -59,12 +61,11 @@ const SongSheet: React.FC<SongSheetProps> = (props) => {
         album: name,
         picUrl,
         name: song.name,
-        hasCopyRight: noCopyrightRcmd ? false : true
+        hasCopyRight: copyright
       };
     }
     async function fetchSongsInfo() {
       setTableData([]);
-      onlyPushOnce.current = false;
       if (trackIds && trackIds.length) {
         !isUnmount && setLoading(true);
         const idsStr = trackIds.join(",");
@@ -80,7 +81,6 @@ const SongSheet: React.FC<SongSheetProps> = (props) => {
               alia: songs[i].alia.join(",")
             });
             dispatchedMap.set(parsedSong.id, song);
-          } else {
           }
           _tableData.push(parsedSong);
         }
@@ -126,14 +126,13 @@ const SongSheet: React.FC<SongSheetProps> = (props) => {
     );
   }
 
-  function hanldeDoubleClick(id: string, hasCopyRight: boolean) {
+  function handleDoubleClick(id: string, hasCopyRight: boolean) {
     if (!hasCopyRight)
       return message.error({
         content: "因合作方要求，该资源暂时下架>_<"
       });
-    if (!onlyPushOnce.current) {
-      pushPlayQueue(trackIdsRef.current);
-      onlyPushOnce.current = true;
+    if (willPlaylistId.indexOf(id) === -1) {
+      pushPlayQueue(trackIdsRef.current, id);
     }
     fetchPlayUrl(id);
     changePlayIndex(id);
@@ -153,7 +152,7 @@ const SongSheet: React.FC<SongSheetProps> = (props) => {
         onRow={(record) => {
           return {
             onDoubleClick: () =>
-              hanldeDoubleClick(record.id, record.hasCopyRight)
+              handleDoubleClick(record.id, record.hasCopyRight)
           };
         }}
       >
@@ -226,15 +225,14 @@ SongSheet.defaultProps = {
   clickAndPushAll: true
 };
 
-const mapStateToProps = (
-  state: UnionStateTypes
-): { current: string; playState: boolean } => {
+const mapStateToProps = (state: UnionStateTypes) => {
   const player = state.player;
   const current = player.current;
 
   return {
     current: player.playQueue[current],
-    playState: player.playState
+    playState: player.playState,
+    willPlaylistId: player.willplaylistId
   };
 };
 
@@ -243,8 +241,8 @@ const mapDispatchToProps = (dispatch: any) => {
     setPlayDetailMap(map: Map<string, PlayDetailItem>) {
       dispatch(getSetPlayDetailMapAction(map));
     },
-    pushPlayQueue(ids: string | Array<string>) {
-      dispatch(getPushPlayQueueAction(ids, true));
+    pushPlayQueue(ids: string | Array<string>, playlistId: string) {
+      dispatch(getPushPlayQueueAction(ids, true, playlistId));
     },
     fetchPlayUrl(id: string) {
       dispatch(fetchPlayUrl(id));

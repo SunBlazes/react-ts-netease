@@ -59,6 +59,8 @@ const MoreComments: React.FC<MoreCommentsProps> = (props) => {
           return `comment/hot?id=${id}&type=0&offset=${offset}&limit=${limit}`;
         case "mv":
           return `comment/hot?id=${id}&type=1&offset=${offset}&limit=${limit}`;
+        case "album":
+          return `comment/hot?id=${id}&type=3&offset=${offset}&limit=${limit}`;
       }
     }
 

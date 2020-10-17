@@ -2,11 +2,13 @@ import React, { useState, ChangeEvent, useEffect, useRef } from "react";
 import CommentItem, { CommentItemProps, IBeReplied } from "./commentItem";
 import axios from "../../network";
 import { LoadingOutlined, RightOutlined } from "@ant-design/icons";
-import { Pagination } from "antd";
+import { Pagination, message } from "antd";
 import { PaginationProps } from "antd/es/pagination";
 import { connect } from "react-redux";
 import { getSetMoreCommentsAttrAction } from "./store";
 import { getChangeTypeShowAction } from "../../pages/Home/store";
+import { UnionStateTypes } from "../../store";
+import { getChangeSignInShowAction } from "../SignIn/store/actionCreator";
 
 export interface IQueryParams {
   page: number;
@@ -55,7 +57,7 @@ export function parseComments(
   return _comments;
 }
 
-const Commets: React.FC<CommentsProps> = (props) => {
+const Comments: React.FC<CommentsProps> = (props) => {
   const [restCount, setRestCount] = useState(280);
   const [popComments, setPopComments] = useState<Array<CommentItemProps>>([]);
   const [newComments, setNewComments] = useState<Array<CommentItemProps>>([]);
@@ -63,10 +65,18 @@ const Commets: React.FC<CommentsProps> = (props) => {
   // 有无更多的热门评论
   const [moreHot, setMoreHot] = useState(false);
   const [popCommentsShow, setPopCommentsShow] = useState(false);
-  const { id, type, setMoreCommentsAttr, changeShow } = props;
+  const {
+    id,
+    type,
+    setMoreCommentsAttr,
+    changeShow,
+    userState,
+    ChangeSignInShow
+  } = props;
   const [pagination, setPagination] = useState<PaginationProps>({
     current: 1
   });
+  const $textarea = useRef<HTMLTextAreaElement>(null);
   const defaultPagination = useRef<PaginationProps>({
     defaultCurrent: 1,
     defaultPageSize: 50,
@@ -118,40 +128,98 @@ const Commets: React.FC<CommentsProps> = (props) => {
   }
 
   useEffect(() => {
+    let isUnmount = false;
     function fetchUrl(id: string, type: commentType) {
       const { page, limit } = queryParams;
       const offset = page * limit;
       switch (type) {
         case "playlist":
-          return `comment/playlist?id=${id}&limit=${limit}&offset=${offset}`;
+          return `comment/playlist?id=${id}&limit=${limit}&offset=${offset}&timestamp=${Date.now()}`;
         case "music":
-          return `comment/music?id=${id}&limit=${limit}&offset=${offset}`;
+          return `comment/music?id=${id}&limit=${limit}&offset=${offset}&timestamp=${Date.now()}`;
         case "mv":
-          return `comment/mv?id=${id}&limit=${limit}&offset=${offset}`;
+          return `comment/mv?id=${id}&limit=${limit}&offset=${offset}&timestamp=${Date.now()}`;
+        case "album":
+          return `comment/album?id=${id}&limit=${limit}&offset=${offset}&timestamp=${Date.now()}`;
       }
     }
 
     async function fetchComments() {
-      setLoading(true);
+      !isUnmount && setLoading(true);
       const { data } = await axios.get(fetchUrl(id, type));
       console.log(data);
       if (queryParams.page === 0) {
-        setMoreHot(data.moreHot);
-        setPopComments(parseComments(data.hotComments));
-        setPopCommentsShow(true);
+        !isUnmount && setMoreHot(data.moreHot);
+        !isUnmount && setPopComments(parseComments(data.hotComments));
+        !isUnmount && setPopCommentsShow(true);
       }
-      setNewComments(parseComments(data.comments));
-      setPagination({
-        total: data.total
-      });
-      setLoading(false);
+      !isUnmount && setNewComments(parseComments(data.comments));
+      !isUnmount &&
+        setPagination({
+          total: data.total
+        });
+      !isUnmount && setLoading(false);
     }
 
     fetchComments();
+
+    return () => {
+      isUnmount = true;
+    };
   }, [id, type, queryParams]);
 
   function onChange(e: ChangeEvent<HTMLTextAreaElement>) {
     setRestCount(280 - e.target.value.length);
+  }
+
+  function mapTypeToNum(type: commentType) {
+    switch (type) {
+      case "music":
+        return 0;
+      case "mv":
+        return 1;
+      case "playlist":
+        return 2;
+    }
+  }
+
+  function sendComment() {
+    if (!userState) {
+      return ChangeSignInShow();
+    }
+    if ($textarea && $textarea.current) {
+      const _type = mapTypeToNum(type);
+      axios
+        .get(
+          `/comment?t=1&type=${_type}&id=${id}&content=${$textarea.current.value}`,
+          { withCredentials: true }
+        )
+        .then((res) => {
+          const comment = res.data.comment;
+          const commentItem: CommentItemProps = {
+            commentId: comment.commentId,
+            content: comment.content,
+            time: comment.time,
+            userId: comment.user.userId,
+            nickname: comment.user.nickname,
+            avatarUrl: comment.user.avatarUrl,
+            likedCount: 0
+          };
+          message.success({
+            content: "评论发送成功",
+            duration: 0.5,
+            onClose: () => {
+              setNewComments((value) => {
+                return [commentItem].concat(value);
+              });
+              if ($textarea && $textarea.current) {
+                $textarea.current.value = "";
+              }
+            }
+          });
+        })
+        .catch((error) => console.log(error));
+    }
   }
 
   return (
@@ -164,10 +232,13 @@ const Commets: React.FC<CommentsProps> = (props) => {
             rows={3}
             maxLength={280}
             onChange={onChange}
+            ref={$textarea}
           />
           <div className="rest-words-count">{restCount}</div>
         </div>
-        <button className="btn-comment">评论</button>
+        <button className="btn-comment" onClick={sendComment}>
+          评论
+        </button>
       </div>
       {popComments.length !== 0 && (
         <div className={`pop-comments ${popCommentsShow ? "show" : ""}`}>
@@ -204,6 +275,13 @@ const Commets: React.FC<CommentsProps> = (props) => {
   );
 };
 
+const mapStateToProps = (state: UnionStateTypes) => {
+  const header = state.header;
+  return {
+    userState: header.userState
+  };
+};
+
 const mapDispatchToProps = (dispatch: any) => {
   return {
     setMoreCommentsAttr(attr: MoreCommentsAttrType) {
@@ -211,8 +289,14 @@ const mapDispatchToProps = (dispatch: any) => {
     },
     changeShow(type: showOfType) {
       dispatch(getChangeTypeShowAction(type));
+    },
+    ChangeSignInShow() {
+      dispatch(getChangeSignInShowAction(true));
     }
   };
 };
 
-export default connect(null, mapDispatchToProps)(React.memo(Commets));
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(React.memo(Comments));

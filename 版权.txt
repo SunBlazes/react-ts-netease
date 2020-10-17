@@ -1,0 +1,4 @@
+最大前提 noCopyrightRcmd !== undefined 即为没有版权
+fee === 0 可听可下载
+fee === 1 不可听不可下载
+fee === 8 可听但不能下载

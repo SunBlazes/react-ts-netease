@@ -4,6 +4,9 @@ type CHANGE_TYPE_SHOW_TYPE = typeof CHNAGE_TYPE_SHOW;
 export const TOGGLE_TYPE_SHOW = "toggle_type_show";
 type TOGGLE_TYPE_SHOW_TYPE = typeof TOGGLE_TYPE_SHOW;
 
+export const REMOVE_TYPE_SHOW = "replace_type_show";
+type REMOVE_TYPE_SHOW_TYPE = typeof REMOVE_TYPE_SHOW;
+
 export type direction = "prev" | "next";
 
 interface ChangeTypeShowType {
@@ -18,4 +21,12 @@ interface ToggleTypeShowType {
   callback?: Function;
 }
 
-export type HomeActionTypes = ChangeTypeShowType | ToggleTypeShowType;
+interface RemoveTypeShowType {
+  type: REMOVE_TYPE_SHOW_TYPE;
+  showType: showOfType;
+}
+
+export type HomeActionTypes =
+  | ChangeTypeShowType
+  | ToggleTypeShowType
+  | RemoveTypeShowType;

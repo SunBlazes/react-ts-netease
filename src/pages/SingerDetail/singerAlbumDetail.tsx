@@ -65,7 +65,7 @@ const SingerAlbumDetail: React.FC<SingerAlbumDetailProps> = (props) => {
       const _map = new Map<string, PlayDetailItem>();
       for (let i = 0; i < arr.length; i++) {
         const item = arr[i];
-        const { name, id, dt, alia, noCopyrightRcmd, ar, al } = item;
+        const { name, id, dt, alia, noCopyrightRcmd, ar, al, fee } = item;
         trackIdsRef.current.push(item.id);
         _map.set(item.id, {
           name,
@@ -73,9 +73,9 @@ const SingerAlbumDetail: React.FC<SingerAlbumDetailProps> = (props) => {
           singerName: mergeSingerNames(ar),
           picUrl: al.picUrl,
           album: al.name,
-          alia,
+          alia: alia.join(" "),
           id,
-          hasCopyRight: noCopyrightRcmd ? false : true
+          hasCopyRight: noCopyrightRcmd || fee ? false : true
         });
         _arr.push({
           name,

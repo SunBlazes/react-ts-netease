@@ -13,12 +13,16 @@ import { UnionStateTypes } from "../../store";
 import PlayList from "../PlayList";
 import SingerDetail from "../SingerDetail";
 import MV from "../MV";
+import SearchResult from "../SearchResult";
+import Album from "../Album";
 
-type currentType = "recommend";
+type currentType = "recommend" | "mylove";
 
 export interface HomeProps {
   moreCommentsShow: boolean;
   currType: string;
+  userState: boolean;
+  userId: string;
 }
 
 export interface IPlaylistContext {
@@ -33,6 +37,14 @@ export interface IMVContext {
   changeMVId: (id: string) => void;
 }
 
+export interface IAlbumContext {
+  changeAlbumId: (id: string) => void;
+}
+
+export interface ISearchOfResultContext {
+  changeKeywords: (keywords: string) => void;
+}
+
 export const PlaylistContext = createContext<IPlaylistContext>({
   changePlaylistId: () => {}
 });
@@ -45,12 +57,22 @@ export const MVContext = createContext<IMVContext>({
   changeMVId: () => {}
 });
 
+export const AlbumContext = createContext<IAlbumContext>({
+  changeAlbumId: () => {}
+});
+
+export const SearchOfResultContext = createContext<ISearchOfResultContext>({
+  changeKeywords: () => {}
+});
+
 const Home: React.FC<HomeProps> = (props) => {
   const { moreCommentsShow, currType } = props;
   const [current, setCurrent] = useState<currentType>("recommend");
   const [playlistId, setPlaylistId] = useState("");
   const [singerId, setSingerId] = useState("");
   const [mvId, setMVId] = useState("");
+  const [albumId, setAlbumId] = useState("");
+  const [keywords, setKeywords] = useState("");
   const scrollTopMap = useRef(
     new Map<showOfType, number>([
       ["playlist", 0],
@@ -79,8 +101,24 @@ const Home: React.FC<HomeProps> = (props) => {
     changeMVId
   };
 
+  const passedAlbumContext: IAlbumContext = {
+    changeAlbumId
+  };
+
+  const passedSearchOfResultContext: ISearchOfResultContext = {
+    changeKeywords
+  };
+
+  function changeKeywords(keywords: string) {
+    setKeywords(keywords);
+  }
+
   function changePlaylistId(id: string) {
     setPlaylistId(id);
+  }
+
+  function changeAlbumId(id: string) {
+    setAlbumId(id);
   }
 
   function changeSingerId(id: string) {
@@ -94,7 +132,13 @@ const Home: React.FC<HomeProps> = (props) => {
   function handleItemClick(e: MenuInfo) {
     const key = e.key as currentType;
     setCurrent(key);
+
+    if (key === "mylove") {
+      handleMyLove();
+    }
   }
+
+  function handleMyLove() {}
 
   useEffect(() => {
     const el = document.getElementsByClassName("home-content")[0];
@@ -112,7 +156,15 @@ const Home: React.FC<HomeProps> = (props) => {
 
   return (
     <div className="home">
-      <Header />
+      <AlbumContext.Provider value={passedAlbumContext}>
+        <PlaylistContext.Provider value={passedPlaylistContextValue}>
+          <SingerDetailContext.Provider value={passedSingerContextValue}>
+            <SearchOfResultContext.Provider value={passedSearchOfResultContext}>
+              <Header />
+            </SearchOfResultContext.Provider>
+          </SingerDetailContext.Provider>
+        </PlaylistContext.Provider>
+      </AlbumContext.Provider>
       <SignIn />
       <Layout style={{ overflow: "hidden" }}>
         <Layout.Sider className="home-sider">
@@ -137,17 +189,21 @@ const Home: React.FC<HomeProps> = (props) => {
           </PlaylistContext.Provider>
         </Layout.Sider>
         <Layout.Content className="home-content">
-          <PlaylistContext.Provider value={passedPlaylistContextValue}>
-            <SingerDetailContext.Provider value={passedSingerContextValue}>
-              <SearchMusic />
-              <MVContext.Provider value={passedMVContext}>
-                <SingerDetail id={singerId} />
-              </MVContext.Provider>
-            </SingerDetailContext.Provider>
-          </PlaylistContext.Provider>
+          <AlbumContext.Provider value={passedAlbumContext}>
+            <PlaylistContext.Provider value={passedPlaylistContextValue}>
+              <SingerDetailContext.Provider value={passedSingerContextValue}>
+                <SearchMusic show={current === "recommend"} />
+                <MVContext.Provider value={passedMVContext}>
+                  <SingerDetail id={singerId} />
+                  <SearchResult keywords={keywords} />
+                </MVContext.Provider>
+              </SingerDetailContext.Provider>
+            </PlaylistContext.Provider>
+          </AlbumContext.Provider>
           {moreCommentsShow && <MoreComments />}
           <MV id={mvId} />
           <PlayList id={playlistId} />
+          <Album id={albumId} />
         </Layout.Content>
       </Layout>
       <Layout.Footer className="home-footer">
@@ -159,9 +215,13 @@ const Home: React.FC<HomeProps> = (props) => {
 
 const mapStateToProps = (state: UnionStateTypes) => {
   const home = state.home;
+  const header = state.header;
+
   return {
     moreCommentsShow: home.showMap.get("moreComments") as boolean,
-    currType: home.currLinkedItem.currType
+    currType: home.currLinkedItem.currType,
+    userState: header.userState,
+    userId: header.user.userId
   };
 };
 

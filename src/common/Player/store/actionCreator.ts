@@ -13,12 +13,14 @@ import axios from "../../../network";
 
 export const getPushPlayQueueAction = (
   id: string | Array<string>,
-  shouldCover = false
+  shouldCover = false,
+  playlistId = ""
 ): PlayerActionType => {
   return {
     type: PUSH_PLAY_QUEUE,
     id,
-    shouldCover
+    shouldCover,
+    playlistId
   };
 };
 

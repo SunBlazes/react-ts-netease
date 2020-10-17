@@ -1,11 +1,10 @@
 .header {
   height: $header-height;
   background-color: $dot-active-color;
-  overflow: hidden;
+  padding: $header-inner-padding-y $header-inner-padding-x;
 
   .header-inner {
     height: $height-inner-height;
-    margin: $header-inner-margin-y $header-inner-margin-x;
 
     .logo {
       display: flex;

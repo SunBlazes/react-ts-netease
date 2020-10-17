@@ -97,14 +97,20 @@ $dot-active-color:          $theme-color;
 // header
 $header-height:              3.5rem !default;
 $height-inner-height:        $header-height - 1rem !default;
-$header-inner-margin-y:      .5rem !default;
-$header-inner-margin-x:      1rem !default;
+$header-inner-padding-y:      .5rem !default;
+$header-inner-padding-x:      1rem !default;
 
 // searchInput
-$searchInput-width:          200px !default;
+$searchInput-width:          250px !default;
 $searchInput-height:         1.75rem !default;
 $searchInput-radius:         $searchInput-height / 2 !default;
 $searchInput-font-size:      .8rem !default;
+
+// searchContent
+$searchContent-width:                  $searchInput-width !default;
+$searchContent-triangle-half-height:   12px !default;
+$searchContent-triangle-left:          ($searchContent-width - $searchContent-triangle-half-height * 2) / 2 !default; 
+$searchContent-triangle-top:           -$searchContent-triangle-half-height * 2 !default;
 
 // signin
 $signin-padding-x:           1rem !default;

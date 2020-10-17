@@ -1,0 +1,297 @@
+.search-result {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  background-color: white;
+  z-index: 1001;
+
+  &.hidden {
+    display: none;
+  }
+
+  > .search-result-header {
+    padding: 30px;
+    font-size: .9rem;
+    letter-spacing: 1px;
+
+    > span {
+      color: rgba($color: skyblue, $alpha: 1);
+    }
+  }
+
+  > .search-result-tabs {
+    border-bottom: 1px solid $theme-color;
+    padding-left: 30px;
+
+    > .search-result-tabs-item {
+      width: 90px;
+      height: 30px;
+      line-height: 30px;
+      text-align: center;
+      margin-right: 10px;
+      background-color: white;
+      color: black;
+      border-width: 1px;
+      border-style: solid;
+      border-color: #ccc;
+      border-bottom: none !important;
+      font-size: .9rem;
+      cursor: pointer;
+      display: inline-block;
+
+      &.selected {
+        background-color: $theme-color;
+        color: white;
+        border-color: $theme-color;
+      }
+
+      &:not(.selected) {
+        &:hover {
+          background-color: rgba($color: #ccc, $alpha: .3);
+        }
+      }
+    }
+  }
+
+  > .search-result-loading {
+    text-align: center;
+    line-height: 30px;
+    > span {
+      font-size: .9rem;
+      margin-left: 10px;
+    }
+  }
+
+  > .result-of-songs {
+    background-color: white;
+    min-height: 100%;
+    &.hidden {
+      display: none;
+    }
+    .ant-empty {
+      display: none;
+    }
+    .ant-table-row:hover {
+      .pop {
+        > div {
+          background-color: rgba($color: grey, $alpha: .8);
+        }
+      }
+    }
+    .pop {
+      height: 10px;
+      background-color: rgba($color: grey, $alpha: .2);
+      border-radius: 5px;
+      > div {
+        background-color: rgba($color: grey, $alpha: .4);
+        height: 100%;
+        border-radius: 5px;
+      }
+    }
+    .steer {
+      > .anticon {
+        margin: 0 4px;
+      }
+    }
+    .index {
+      .anticon {
+        color: rgba($color: $theme-color, $alpha: .4);
+        &.play {
+          color: rgba($color: $theme-color, $alpha: .9);
+        }
+      }
+    }
+  }
+
+  .result-of-pagination {
+    text-align: center;
+    height: 40px;
+    margin-top: 20px;
+  }
+
+  > .result-of-singers {
+    background-color: white;
+    min-height: 100%;
+    &.hidden {
+      display: none;
+    }
+    .result-of-singers-item {
+      display: flex;
+      cursor: pointer;
+      padding: 5px 0 5px 20px;
+      align-items: center;
+      &:nth-child(even) {
+        background-color: rgba($color: gray, $alpha: .04);
+      }
+      &:hover {
+        background-color: rgba($color: gray, $alpha: .1);
+      }
+      > .img {
+        width: 47px;
+        height: 47px;
+        border: 1px solid #ccc;
+        img {
+          width: 100%;
+        }
+      }
+      > .name {
+        font-size: .9rem;
+        margin-left: 15px;
+      }
+    }
+  }
+
+  > .result-of-albums {
+    min-height: 100%;
+    background-color: #fff;
+    &.hidden {
+      display: none;
+    }
+    > .result-of-albums-item {
+      display: flex;
+      cursor: pointer;
+      padding: 5px 0 5px 20px;
+      align-items: center;
+      &:nth-child(even) {
+        background-color: rgba($color: gray, $alpha: .04);
+      }
+      &:hover {
+        background-color: rgba($color: gray, $alpha: .1);
+      }
+      > .img {
+        width: 47px;
+        height: 47px;
+        border: 1px solid #ccc;
+        img {
+          width: 100%;
+        }
+      }
+      > .name {
+        font-size: .9rem;
+        margin-left: 15px;
+        width: 30%;
+      }
+
+      > .singer-name {
+        font-size: .9rem;
+      }
+    }
+  }
+
+  > .result-of-mvs {
+    padding: 20px 30px;
+    background-color: white;
+    min-height: 100%;
+    &.hidden {
+      display: none;
+    }
+
+    > .result-of-mvs-content {
+      > .result-of-mvs-item {
+        display: inline-block;
+        width: 201px;
+        margin-right: 30px;
+        > div {
+          position: relative;
+          width: 100%;
+          height: 114px;
+          border: 1px solid #ccc;
+          margin-bottom: 5px;
+          cursor: pointer;
+          img {
+            width: 100%;
+          }
+
+          > .duration {
+            color: white;
+            position: absolute;
+            bottom: 2px;
+            left: 4px;
+            font-size: .9rem;
+          }
+
+          > .playCount {
+            color: white;
+            position: absolute;
+            top: 0px;
+            right: 0px;
+            font-size: .8rem;
+            left: 0;
+            text-align: right;
+            padding: 2px;
+            background-image: linear-gradient(to right, transparent 0 , transparent 60%, rgba(0,0,0,.6));
+            
+            .anticon {
+              font-size: 1rem;
+              margin-right: 5px;
+            }
+          }
+        }
+
+        > .name, > .singer-name {
+          width: 100%;
+          cursor: pointer;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          padding: 0;
+          margin: 0;
+          line-height: 1.2;
+          font-size: .9rem;
+        }
+      }
+    }
+  }
+
+  > .result-of-playlists {
+    background-color: white;
+    min-height: 100%;
+    &.hidden {
+      display: none;
+    }
+    > .result-of-playlists-item {
+      display: flex;
+      align-items: center;
+      padding: 7px 20px;
+      cursor: pointer;
+      background-color: rgba($color: gray, $alpha: .04);
+
+      &:nth-child(even) {
+        background-color: rgba($color: gray, $alpha: 0.07);
+      }
+
+      &:hover {
+        background-color: rgba($color: gray, $alpha: .2);
+      }
+
+      > .img {
+        width: 52px;
+        height: 52px;
+        border: 1px solid #ccc;
+
+        > img {
+          width: 100%;
+        }
+      }
+
+      > .name {
+        margin-left: 20px;
+        font-size: .9rem;
+        width: 50%;
+      }
+
+      > .total {
+        font-size: .9rem;
+        width: 10%;
+        color: rgba($color: gray, $alpha: .7);
+      }
+
+      > .creator-name {
+        font-size: .9rem;
+        color: rgba($color: gray, $alpha: .7);
+      }
+    }
+  }
+}

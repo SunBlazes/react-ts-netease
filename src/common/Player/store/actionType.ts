@@ -23,6 +23,7 @@ export interface PushPlayQueueType {
   type: PUSH_PLAY_QUEUE_TYPE;
   id: string | Array<string>;
   shouldCover: boolean;
+  playlistId: string;
 }
 
 export interface SetPlayUrlMapType {

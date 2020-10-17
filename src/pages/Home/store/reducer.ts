@@ -13,7 +13,9 @@ const defaultState: HomeStoreStateProps = {
     ["singerRank", false],
     ["songDetailContent", false],
     ["singerDetail", false],
-    ["mv", false]
+    ["mv", false],
+    ["searchResult", false],
+    ["album", false]
   ]),
   currLinkedItem: {
     currType: "recommend"
@@ -30,6 +32,9 @@ function clone(state: HomeStoreStateProps) {
 export default (state = defaultState, action: types.HomeActionTypes) => {
   switch (action.type) {
     case types.CHNAGE_TYPE_SHOW: {
+      if (state.showMap.get(action.showType)) {
+        return state;
+      }
       const newState = clone(state);
       const prevItem = newState.currLinkedItem;
       const prevType = prevItem.currType; // 之前显示的
@@ -59,8 +64,60 @@ export default (state = defaultState, action: types.HomeActionTypes) => {
         nextItem.prev = currItem;
         newState.currLinkedItem = nextItem;
       }
+      if (currType !== newState.currLinkedItem.currType) {
+        newState.showMap.set(newState.currLinkedItem.currType, true);
+        newState.showMap.set(currType, false);
+      }
+      return newState;
+    }
+    case types.REMOVE_TYPE_SHOW: {
+      const type = action.showType;
+      const newState = clone(state);
+      const currLinkedItem = newState.currLinkedItem;
+
+      if (currLinkedItem.currType === type) {
+        const prev = currLinkedItem.prev as ShowOfTypeLinkedItem;
+        prev.next = currLinkedItem.next;
+        newState.currLinkedItem = prev;
+      }
+
+      let currItem = newState.currLinkedItem;
+      while (currItem.prev) {
+        const prev = currItem.prev;
+        if (prev.currType === type) {
+          if (prev.prev) {
+            const prev1 = prev.prev;
+            prev1.next = prev.next;
+            currItem.prev = prev1;
+            currItem = prev1;
+          } else {
+            currItem.prev = undefined;
+          }
+        } else {
+          currItem = prev;
+        }
+      }
+
+      while (currItem.next) {
+        const next = currItem.next;
+        if (next.currType === type) {
+          if (next.next) {
+            const next1 = next.next;
+            next1.prev = next.prev;
+            currItem.next = next1;
+            currItem = next1;
+          } else {
+            currItem.next = undefined;
+          }
+        } else {
+          currItem = next;
+        }
+      }
+
+      newState.showMap.set(type, false);
       newState.showMap.set(newState.currLinkedItem.currType, true);
-      newState.showMap.set(currType, false);
+
+      console.log(newState);
       return newState;
     }
     default:
