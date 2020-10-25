@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { Menu } from "antd";
-import { MenuInfo } from "_rc-menu@8.6.1@rc-menu/lib/interface";
 import Recommend from "../Recommend";
 import { CSSTransition } from "react-transition-group";
 import TotalPlaylists from "../TotalPlaylists";
@@ -37,7 +36,7 @@ const SearchMusic: React.FC<SearchMusicProps> = (props) => {
     hidden: !show
   });
 
-  function handleItemClick(e: MenuInfo) {
+  function handleItemClick(e: any){
     const key = e.key as currentType;
     changeShow(key);
     const _firstRequest = { ...firstRequest };

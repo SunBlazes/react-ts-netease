@@ -4,7 +4,6 @@ import SignIn from "../../common/SignIn";
 import { Layout, Menu } from "antd";
 import { CustomerServiceOutlined, HeartOutlined } from "@ant-design/icons";
 import SearchMusic from "../SearchMusic";
-import { MenuInfo } from "_rc-menu@8.6.1@rc-menu/lib/interface";
 import Player from "../../common/Player";
 import SongDetail from "../../common/SongDetail";
 import MoreComments from "../../common/comments/moreComments";
@@ -129,7 +128,7 @@ const Home: React.FC<HomeProps> = (props) => {
     setMVId(id);
   }
 
-  function handleItemClick(e: MenuInfo) {
+  function handleItemClick(e: any) {
     const key = e.key as currentType;
     setCurrent(key);
 
