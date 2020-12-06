@@ -1,10 +1,9 @@
-import React, { useState, createContext, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import Header from "../../common/Header";
 import SignIn from "../../common/SignIn";
-import { Layout, Menu } from "antd";
-import { CustomerServiceOutlined, HeartOutlined } from "@ant-design/icons";
+import { Layout, Menu, message } from "antd";
+import { CustomerServiceOutlined, UnderlineOutlined } from "@ant-design/icons";
 import SearchMusic from "../SearchMusic";
-import { MenuInfo } from "_rc-menu@8.6.1@rc-menu/lib/interface";
 import Player from "../../common/Player";
 import SongDetail from "../../common/SongDetail";
 import MoreComments from "../../common/comments/moreComments";
@@ -15,156 +14,176 @@ import SingerDetail from "../SingerDetail";
 import MV from "../MV";
 import SearchResult from "../SearchResult";
 import Album from "../Album";
-
-type currentType = "recommend" | "mylove";
+import { Route, Link, Switch, useHistory, Redirect } from "react-router-dom";
+import { KeepAlive, createContext } from "react-activation";
+import { CSSTransition } from "react-transition-group";
+import Mylove from "../Mylove";
+import axios from "../../network";
 
 export interface HomeProps {
-  moreCommentsShow: boolean;
-  currType: string;
   userState: boolean;
   userId: string;
+  userName: string;
+  avatarUrl: string;
 }
 
-export interface IPlaylistContext {
-  changePlaylistId: (id: string) => void;
+export interface HistoryStackProps {
+  prev?: HistoryStackProps;
+  next?: HistoryStackProps;
+  name: string;
 }
 
-export interface ISingerDetailContext {
-  changeSingerId: (id: string) => void;
+export interface IMylove {
+  name: string;
+  id: string;
 }
 
-export interface IMVContext {
-  changeMVId: (id: string) => void;
-}
-
-export interface IAlbumContext {
-  changeAlbumId: (id: string) => void;
-}
-
-export interface ISearchOfResultContext {
-  changeKeywords: (keywords: string) => void;
-}
-
-export const PlaylistContext = createContext<IPlaylistContext>({
-  changePlaylistId: () => {}
-});
-
-export const SingerDetailContext = createContext<ISingerDetailContext>({
-  changeSingerId: () => {}
-});
-
-export const MVContext = createContext<IMVContext>({
-  changeMVId: () => {}
-});
-
-export const AlbumContext = createContext<IAlbumContext>({
-  changeAlbumId: () => {}
-});
-
-export const SearchOfResultContext = createContext<ISearchOfResultContext>({
-  changeKeywords: () => {}
+export const SetHistoryStackContext = createContext<{
+  setHistoryStack: (
+    type: "prev" | "next" | "push" | "remove" | "clear",
+    name: string
+  ) => void;
+}>({
+  setHistoryStack: () => {}
 });
 
 const Home: React.FC<HomeProps> = (props) => {
-  const { moreCommentsShow, currType } = props;
-  const [current, setCurrent] = useState<currentType>("recommend");
-  const [playlistId, setPlaylistId] = useState("");
-  const [singerId, setSingerId] = useState("");
-  const [mvId, setMVId] = useState("");
-  const [albumId, setAlbumId] = useState("");
-  const [keywords, setKeywords] = useState("");
-  const scrollTopMap = useRef(
-    new Map<showOfType, number>([
-      ["playlist", 0],
-      ["songDetailContent", 0],
-      ["moreComments", 0],
-      ["comments", 0],
-      ["recommend", 0],
-      ["totalPlaylist", 0],
-      ["rank", 0],
-      ["singer", 0],
-      ["singerRank", 0],
-      ["songDetailContent", 0],
-      ["singerDetail", 0]
-    ])
-  );
-
-  const passedPlaylistContextValue: IPlaylistContext = {
-    changePlaylistId
-  };
-
-  const passedSingerContextValue: ISingerDetailContext = {
-    changeSingerId
-  };
-
-  const passedMVContext: IMVContext = {
-    changeMVId
-  };
-
-  const passedAlbumContext: IAlbumContext = {
-    changeAlbumId
-  };
-
-  const passedSearchOfResultContext: ISearchOfResultContext = {
-    changeKeywords
-  };
-
-  function changeKeywords(keywords: string) {
-    setKeywords(keywords);
-  }
-
-  function changePlaylistId(id: string) {
-    setPlaylistId(id);
-  }
-
-  function changeAlbumId(id: string) {
-    setAlbumId(id);
-  }
-
-  function changeSingerId(id: string) {
-    setSingerId(id);
-  }
-
-  function changeMVId(id: string) {
-    setMVId(id);
-  }
-
-  function handleItemClick(e: MenuInfo) {
-    const key = e.key as currentType;
-    setCurrent(key);
-
-    if (key === "mylove") {
-      handleMyLove();
+  const { userId, userName, avatarUrl } = props;
+  const [current, setCurrent] = useState("recommend");
+  const [historyStack, setHistoryStack] = useState<HistoryStackProps>({
+    name: "recommend"
+  });
+  const [myloves, setMyloves] = useState<IMylove[]>([]);
+  const history = useHistory();
+  const passedSetHistoryStack: {
+    setHistoryStack: (
+      type: "prev" | "next" | "push" | "remove" | "clear",
+      name: string
+    ) => void;
+  } = {
+    setHistoryStack(type, name) {
+      switch (type) {
+        case "push": {
+          const item: HistoryStackProps = {
+            name,
+            prev: historyStack
+          };
+          historyStack.next = item;
+          setHistoryStack(item);
+          break;
+        }
+        case "next": {
+          setHistoryStack(historyStack.next as HistoryStackProps);
+          break;
+        }
+        case "prev": {
+          setHistoryStack(historyStack.prev as HistoryStackProps);
+          break;
+        }
+        case "remove": {
+          if (name === "prev") {
+            if (historyStack.prev) {
+              historyStack.prev.next = undefined;
+              setHistoryStack(historyStack.prev as HistoryStackProps);
+            }
+          } else {
+            if (historyStack.next) {
+              historyStack.next.next = undefined;
+              setHistoryStack(historyStack.next as HistoryStackProps);
+            }
+          }
+          break;
+        }
+        case "clear": {
+          historyStack.prev = undefined;
+          historyStack.next = undefined;
+          historyStack.name = "recommend";
+          setHistoryStack(historyStack);
+          break;
+        }
+        default:
+          return;
+      }
     }
-  }
-
-  function handleMyLove() {}
+  };
 
   useEffect(() => {
-    const el = document.getElementsByClassName("home-content")[0];
-    const map = scrollTopMap.current;
-
-    if (el) {
-      setTimeout(() => {
-        el.scroll({ top: map.get(currType as showOfType) });
+    function handleOffline() {
+      console.log("offline");
+      message.error({
+        content: "亲, 请连接网络 !!",
+        duration: 0
       });
     }
-    return () => {
-      map.set(currType as showOfType, el.scrollTop);
-    };
-  }, [currType]);
+
+    function handleOnline() {
+      console.log("online");
+      message.destroy();
+      message.success({
+        content: "已连接到网络 !!",
+        duration: 1
+      });
+    }
+    window.addEventListener("offline", handleOffline);
+    window.addEventListener("online", handleOnline);
+  }, []);
+
+  useEffect(() => {
+    function fetchData() {
+      axios.get("/user/playlist?uid=" + userId).then(({ data }) => {
+        const arr: IMylove[] = [];
+        const playlists = data.playlist as any[];
+        for (let i = 0; i < playlists.length; i++) {
+          const item = playlists[i];
+          arr.push({
+            name: item.name,
+            id: item.id
+          });
+        }
+        setMyloves(arr);
+      });
+    }
+
+    if (userId) fetchData();
+    else {
+      setMyloves([]);
+      setCurrent("recommend");
+    }
+  }, [userId]);
+
+  function handleItemClick(e: any) {
+    const key = e.key as string;
+    const keyarr = key.split(" ");
+    if (keyarr.length === 2) {
+      history.push(`/${keyarr[0]}/${keyarr[1]}`);
+      passedSetHistoryStack.setHistoryStack("push", keyarr[0]);
+      setCurrent(key);
+      return;
+    }
+    history.push(`/${key === "recommend" ? "" : key}`);
+    passedSetHistoryStack.setHistoryStack("push", key);
+    setCurrent(key);
+  }
+
+  function returnMyLoves() {
+    return myloves.map((love) => {
+      return (
+        <Menu.Item
+          title={love.name}
+          icon={<UnderlineOutlined />}
+          key={"mylove " + love.id}
+        >
+          {love.name}
+        </Menu.Item>
+      );
+    });
+  }
 
   return (
     <div className="home">
-      <AlbumContext.Provider value={passedAlbumContext}>
-        <PlaylistContext.Provider value={passedPlaylistContextValue}>
-          <SingerDetailContext.Provider value={passedSingerContextValue}>
-            <SearchOfResultContext.Provider value={passedSearchOfResultContext}>
-              <Header />
-            </SearchOfResultContext.Provider>
-          </SingerDetailContext.Provider>
-        </PlaylistContext.Provider>
-      </AlbumContext.Provider>
+      <SetHistoryStackContext.Provider value={passedSetHistoryStack}>
+        <Header historyStack={historyStack} />
+      </SetHistoryStackContext.Provider>
       <SignIn />
       <Layout style={{ overflow: "hidden" }}>
         <Layout.Sider className="home-sider">
@@ -175,53 +194,106 @@ const Home: React.FC<HomeProps> = (props) => {
                 icon={<CustomerServiceOutlined />}
                 key="recommend"
               >
-                发现音乐
+                <Link to="/">发现音乐</Link>
               </Menu.Item>
             </Menu.ItemGroup>
-            <Menu.ItemGroup title="我的音乐">
-              <Menu.Item title="我喜欢的音乐" icon={<HeartOutlined />}>
-                我喜欢的音乐
-              </Menu.Item>
+            <Menu.ItemGroup title="我的音乐(需登录)">
+              {returnMyLoves()}
             </Menu.ItemGroup>
           </Menu>
-          <PlaylistContext.Provider value={passedPlaylistContextValue}>
+          <SetHistoryStackContext.Provider value={passedSetHistoryStack}>
             <SongDetail />
-          </PlaylistContext.Provider>
+          </SetHistoryStackContext.Provider>
         </Layout.Sider>
         <Layout.Content className="home-content">
-          <AlbumContext.Provider value={passedAlbumContext}>
-            <PlaylistContext.Provider value={passedPlaylistContextValue}>
-              <SingerDetailContext.Provider value={passedSingerContextValue}>
-                <SearchMusic show={current === "recommend"} />
-                <MVContext.Provider value={passedMVContext}>
-                  <SingerDetail id={singerId} />
-                  <SearchResult keywords={keywords} />
-                </MVContext.Provider>
-              </SingerDetailContext.Provider>
-            </PlaylistContext.Provider>
-          </AlbumContext.Provider>
-          {moreCommentsShow && <MoreComments />}
-          <MV id={mvId} />
-          <PlayList id={playlistId} />
-          <Album id={albumId} />
+          <SetHistoryStackContext.Provider value={passedSetHistoryStack}>
+            <Switch>
+              <Route path="/mylove/:id">
+                {(render) =>
+                  userId ? (
+                    <KeepAlive name="mylove">
+                      <Mylove
+                        match={render.match!}
+                        avatarUrl={avatarUrl}
+                        userName={userName}
+                      />
+                    </KeepAlive>
+                  ) : (
+                    <Redirect to="/" />
+                  )
+                }
+              </Route>
+              <Route path="/moreComments/:type/:id">
+                {(render) => <MoreComments match={render.match!} />}
+              </Route>
+              <Route path="/singerDetail/:id">
+                {(render) => (
+                  <KeepAlive name="album">
+                    <SingerDetail match={render.match!} />
+                  </KeepAlive>
+                )}
+              </Route>
+              <Route path="/mv/:id">
+                {(render) => (
+                  <CSSTransition
+                    in={render.location.pathname.includes("mv")}
+                    timeout={200}
+                    mountOnEnter
+                    classNames={{
+                      enter: "animate__animated",
+                      enterActive: "animate__fadeIn"
+                    }}
+                    unmountOnExit
+                  >
+                    <MV match={render.match!} />
+                  </CSSTransition>
+                )}
+              </Route>
+              <Route path="/album/:id">
+                {(render) => (
+                  <KeepAlive name="album">
+                    <Album match={render.match!} />
+                  </KeepAlive>
+                )}
+              </Route>
+              <Route path="/playlist/:id">
+                {(render) => (
+                  <KeepAlive name="playlist">
+                    <PlayList match={render.match!} />
+                  </KeepAlive>
+                )}
+              </Route>
+              <Route path="/searchResult/:keywords">
+                {(render) => (
+                  <KeepAlive name="searchResult">
+                    <SearchResult match={render.match!} />
+                  </KeepAlive>
+                )}
+              </Route>
+              <Route path="/">
+                <SearchMusic />
+              </Route>
+            </Switch>
+          </SetHistoryStackContext.Provider>
         </Layout.Content>
       </Layout>
       <Layout.Footer className="home-footer">
-        <Player />
+        <SetHistoryStackContext.Provider value={passedSetHistoryStack}>
+          <Player />
+        </SetHistoryStackContext.Provider>
       </Layout.Footer>
     </div>
   );
 };
 
 const mapStateToProps = (state: UnionStateTypes) => {
-  const home = state.home;
   const header = state.header;
 
   return {
-    moreCommentsShow: home.showMap.get("moreComments") as boolean,
-    currType: home.currLinkedItem.currType,
     userState: header.userState,
-    userId: header.user.userId
+    userId: header.user.userId,
+    userName: header.user.nickname,
+    avatarUrl: header.user.avatarUrl
   };
 };
 

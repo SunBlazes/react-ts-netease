@@ -3,9 +3,8 @@ import axios from "../../network";
 import ResultOfPagination from "./resultOfPagination";
 import { PaginationProps } from "antd/es/pagination";
 import classnames from "classnames";
-import { connect } from "react-redux";
-import { getChangeTypeShowAction } from "../Home/store";
-import { SingerDetailContext } from "../Home";
+import { SetHistoryStackContext } from "../Home";
+import { useHistory } from "react-router-dom";
 
 export interface IQueryParams {
   page: number;
@@ -13,7 +12,7 @@ export interface IQueryParams {
 }
 
 const ResultOfSingers: React.FC<ResultOfSingersProps> = (props) => {
-  const { setLoading, setSearchCount, keywords, changeTypeShow } = props;
+  const { setLoading, setSearchCount, keywords } = props;
   const [singers, setSingers] = useState<ISearchOfSingerItem[]>([]);
   const [queryParams, setQueryParams] = useState<IQueryParams>({
     page: 0,
@@ -26,11 +25,12 @@ const ResultOfSingers: React.FC<ResultOfSingersProps> = (props) => {
   const classes = classnames("result-of-singers", {
     hidden: !show
   });
-  const context = useContext(SingerDetailContext);
+  const context = useContext(SetHistoryStackContext);
+  const history = useHistory();
 
   function handleItemClick(id: string) {
-    context.changeSingerId(id);
-    changeTypeShow("singerDetail");
+    context.setHistoryStack("push", "singerDetail");
+    history.push("/singerDetail/" + id);
   }
 
   function handlePageSizeChange(page: number) {
@@ -46,7 +46,7 @@ const ResultOfSingers: React.FC<ResultOfSingersProps> = (props) => {
     let isUnmount = false;
     function parse(artists: any[]) {
       const _arr: ISearchOfSingerItem[] = [];
-
+      if (!(artists instanceof Array)) return [];
       for (let i = 0; i < artists.length; i++) {
         const item = artists[i];
         _arr.push({
@@ -109,12 +109,4 @@ const ResultOfSingers: React.FC<ResultOfSingersProps> = (props) => {
   );
 };
 
-const mapDispatchToProps = (dispatch: any) => {
-  return {
-    changeTypeShow(type: showOfType) {
-      dispatch(getChangeTypeShowAction(type));
-    }
-  };
-};
-
-export default connect(null, mapDispatchToProps)(React.memo(ResultOfSingers));
+export default React.memo(ResultOfSingers);

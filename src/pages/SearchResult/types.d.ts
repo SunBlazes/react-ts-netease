@@ -1,8 +1,3 @@
-interface SearchResultProps {
-  keywords: string;
-  show: boolean;
-}
-
 interface ResultOfSongsProps {
   keywords: string;
   setSearchCount: (num: number) => void;
@@ -27,7 +22,6 @@ interface ResultOfSingersProps {
   keywords: string;
   setSearchCount: (num: number) => void;
   setLoading: (flag: boolean) => void;
-  changeTypeShow: (type: showOfType) => void;
 }
 
 interface ISearchOfSingerItem {
@@ -40,7 +34,6 @@ interface ResultOfAlbumsProps {
   keywords: string;
   setSearchCount: (num: number) => void;
   setLoading: (flag: boolean) => void;
-  changeTypeShow: (type: showOfType) => void;
 }
 
 interface ISearchOfAlbumItem {
@@ -48,20 +41,20 @@ interface ISearchOfAlbumItem {
   name: string;
   singerName: string;
   picUrl: string;
+  singerId: string;
 }
 
 interface ResultOfMVsProps {
   keywords: string;
   setSearchCount: (num: number) => void;
   setLoading: (flag: boolean) => void;
-  changeTypeShow: (type: showOfType) => void;
 }
 
 interface ISearchOfMVItem {
   playCount: string;
   duration: string;
   name: string;
-  singerName: string;
+  singers: ISingerInfo[];
   id: string;
   picUrl: string;
 }
@@ -70,7 +63,6 @@ interface ResultOfPlaylistsProps {
   keywords: string;
   setSearchCount: (num: number) => void;
   setLoading: (flag: boolean) => void;
-  changeTypeShow: (type: showOfType) => void;
 }
 
 interface ResultOfPlaylistItem {

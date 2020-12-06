@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useContext } from "react";
 import axios from "../../network";
 import classnames from "classnames";
-import { SingerDetailContext } from "../Home";
+import { SetHistoryStackContext } from "../Home";
+import { useHistory } from "react-router-dom";
 
 const SimiSingers: React.FC<SimiSingersProps> = (props) => {
   const { id, show } = props;
@@ -9,7 +10,8 @@ const SimiSingers: React.FC<SimiSingersProps> = (props) => {
   const classes = classnames("zsw-simi-singers", {
     show
   });
-  const singerDetailContext = useContext(SingerDetailContext);
+  const context = useContext(SetHistoryStackContext);
+  const history = useHistory();
 
   useEffect(() => {
     setSimiSingers([]);
@@ -43,7 +45,8 @@ const SimiSingers: React.FC<SimiSingersProps> = (props) => {
   }, [id, show]);
 
   function handleItemClick(id: string) {
-    singerDetailContext.changeSingerId(id);
+    context.setHistoryStack("push", "singerDetail");
+    history.push("/singerDetail/" + id);
   }
 
   return (

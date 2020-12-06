@@ -3,9 +3,8 @@ import classnames from "classnames";
 import axios from "../../network";
 import { PaginationProps } from "antd/es/pagination";
 import ResultOfPagination from "./resultOfPagination";
-import { connect } from "react-redux";
-import { getChangeTypeShowAction } from "../Home/store";
-import { AlbumContext } from "../Home";
+import { SetHistoryStackContext } from "../Home";
+import { useHistory } from "react-router-dom";
 
 export interface IQueryParams {
   page: number;
@@ -13,7 +12,7 @@ export interface IQueryParams {
 }
 
 const ResultOfAlbums: React.FC<ResultOfAlbumsProps> = (props) => {
-  const { setLoading, setSearchCount, keywords, changeTypeShow } = props;
+  const { setLoading, setSearchCount, keywords } = props;
   const [albums, setAlbums] = useState<ISearchOfAlbumItem[]>([]);
   const [show, setShow] = useState(false);
   const classes = classnames("result-of-albums", {
@@ -26,11 +25,18 @@ const ResultOfAlbums: React.FC<ResultOfAlbumsProps> = (props) => {
   const [pagination, setPagination] = useState<PaginationProps>({
     current: 1
   });
-  const context = useContext(AlbumContext);
+  const context = useContext(SetHistoryStackContext);
+  const history = useHistory();
 
-  function handleItemClick(id: string) {
-    context.changeAlbumId(id);
-    changeTypeShow("album");
+  function handleItemClick(e: React.MouseEvent, id: string) {
+    if ((e.target as HTMLDivElement).classList.contains("singer-name")) return;
+    context.setHistoryStack("push", "album");
+    history.push("/album/" + id);
+  }
+
+  function toSingerDetail(id: string) {
+    context.setHistoryStack("push", "singerDetail");
+    history.push("/singerDetail/" + id);
   }
 
   function handlePageSizeChange(page: number) {
@@ -45,14 +51,15 @@ const ResultOfAlbums: React.FC<ResultOfAlbumsProps> = (props) => {
   useEffect(() => {
     function parse(albums: any[]) {
       const _arr: ISearchOfAlbumItem[] = [];
-
+      if (!(albums instanceof Array)) return [];
       for (let i = 0; i < albums.length; i++) {
         const item = albums[i];
         _arr.push({
           id: item.id,
           name: item.name,
           picUrl: item.picUrl,
-          singerName: item.artist.name
+          singerName: item.artist.name,
+          singerId: item.artist.id
         });
       }
 
@@ -88,13 +95,18 @@ const ResultOfAlbums: React.FC<ResultOfAlbumsProps> = (props) => {
           <div
             className="result-of-albums-item"
             key={item.id}
-            onClick={() => handleItemClick(item.id)}
+            onClick={(e) => handleItemClick(e, item.id)}
           >
             <div className="img">
               <img src={item.picUrl + "?param=45y45"} alt="" />
             </div>
             <div className="name">{item.name}</div>
-            <div className="singer-name">{item.singerName}</div>
+            <div
+              className="singer-name"
+              onClick={() => toSingerDetail(item.singerId)}
+            >
+              {item.singerName}
+            </div>
           </div>
         );
       })}
@@ -107,12 +119,4 @@ const ResultOfAlbums: React.FC<ResultOfAlbumsProps> = (props) => {
   );
 };
 
-const mapDispatchToProps = (dispatch: any) => {
-  return {
-    changeTypeShow(type: showOfType) {
-      dispatch(getChangeTypeShowAction(type));
-    }
-  };
-};
-
-export default connect(null, mapDispatchToProps)(React.memo(ResultOfAlbums));
+export default React.memo(ResultOfAlbums);

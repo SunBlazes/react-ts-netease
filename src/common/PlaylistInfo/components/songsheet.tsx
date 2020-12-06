@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useContext } from "react";
 import { Table, message } from "antd";
 import axios from "../../../network";
 import {
@@ -6,7 +6,7 @@ import {
   DownloadOutlined,
   SoundFilled
 } from "@ant-design/icons";
-import { parseTime, mergeSingerNames, parseCopyright } from "../../../utils";
+import { parseTime, mergeSingers, parseCopyright } from "../../../utils";
 import { connect } from "react-redux";
 import {
   getSetPlayDetailMapAction,
@@ -15,6 +15,8 @@ import {
   getChangePlayIndexAction
 } from "../../Player/store";
 import { UnionStateTypes } from "../../../store";
+import { useHistory } from "react-router-dom";
+import { SetHistoryStackContext } from "../../../pages/Home";
 
 const SongSheet: React.FC<SongSheetProps> = (props) => {
   const {
@@ -33,6 +35,18 @@ const SongSheet: React.FC<SongSheetProps> = (props) => {
   const [loading, setLoading] = useState(false);
   const [tableData, setTableData] = useState<Array<ISongSheetItem>>([]);
   const tableDataRef = useRef<Array<ISongSheetItem>>();
+  const context = useContext(SetHistoryStackContext);
+  const history = useHistory();
+
+  function toSingerDetail(id: string) {
+    context.setHistoryStack("push", "singerDetail");
+    history.push("/singerDetail/" + id);
+  }
+
+  function toAlbum(id: string) {
+    context.setHistoryStack("push", "album");
+    history.push("/album/" + id);
+  }
 
   useEffect(() => {
     let isUnmount = false;
@@ -55,40 +69,41 @@ const SongSheet: React.FC<SongSheetProps> = (props) => {
       }
       return {
         duration: parseTime(dt),
-        singerName: mergeSingerNames(ar),
+        singers: mergeSingers(ar),
         id,
         index: index.toString().padStart(2, "0"),
         album: name,
         picUrl,
         name: song.name,
-        hasCopyRight: copyright
+        hasCopyRight: copyright,
+        albumId: song.al.id
       };
     }
-    async function fetchSongsInfo() {
+    function fetchSongsInfo() {
       setTableData([]);
       if (trackIds && trackIds.length) {
         !isUnmount && setLoading(true);
         const idsStr = trackIds.join(",");
-        const { data } = await axios.get("/song/detail?ids=" + idsStr);
-        console.log(data);
-        const songs = data.songs as Array<any>;
-        const _tableData = [];
-        const dispatchedMap = new Map<string, PlayDetailItem>();
-        for (let i = 0; i < songs.length; i++) {
-          const parsedSong = parseSong(songs[i], i + 1);
-          if (parsedSong.hasCopyRight) {
-            const song: PlayDetailItem = Object.assign({}, parsedSong, {
-              alia: songs[i].alia.join(",")
-            });
-            dispatchedMap.set(parsedSong.id, song);
+        axios.get("/song/detail?ids=" + idsStr).then(({ data }) => {
+          const songs = data.songs as Array<any>;
+          const _tableData = [];
+          const dispatchedMap = new Map<string, PlayDetailItem>();
+          for (let i = 0; i < songs.length; i++) {
+            const parsedSong = parseSong(songs[i], i + 1);
+            if (parsedSong.hasCopyRight) {
+              const song: PlayDetailItem = Object.assign({}, parsedSong, {
+                alia: songs[i].alia.join(",")
+              });
+              dispatchedMap.set(parsedSong.id, song);
+            }
+            _tableData.push(parsedSong);
           }
-          _tableData.push(parsedSong);
-        }
-        trackIdsRef.current = trackids;
-        !isUnmount && setTableData(_tableData);
-        tableDataRef.current = _tableData;
-        !isUnmount && setLoading(false);
-        setPlayDetailMap(dispatchedMap);
+          trackIdsRef.current = trackids;
+          !isUnmount && setTableData(_tableData);
+          tableDataRef.current = _tableData;
+          !isUnmount && setLoading(false);
+          setPlayDetailMap(dispatchedMap);
+        });
       }
     }
 
@@ -103,7 +118,8 @@ const SongSheet: React.FC<SongSheetProps> = (props) => {
     if (tableDataRef.current && tableDataRef.current.length) {
       const _tableData: ISongSheetItem[] = [];
       for (let i = 0; i < tableDataRef.current.length; i++) {
-        const { name, album, singerName } = tableDataRef.current[i];
+        const { name, album, singers } = tableDataRef.current[i];
+        const singerName = singers.map((singer) => singer.name);
         if (
           name.includes(keywords) ||
           album.includes(keywords) ||
@@ -144,7 +160,7 @@ const SongSheet: React.FC<SongSheetProps> = (props) => {
         bordered
         dataSource={tableData}
         pagination={false}
-        rowKey={(record) => record.index}
+        rowKey={(record) => record.id}
         className={`songsheet-table ${show ? "show" : ""}`}
         size="small"
         showSorterTooltip={false}
@@ -183,16 +199,24 @@ const SongSheet: React.FC<SongSheetProps> = (props) => {
           }}
         />
         <Table.Column
-          dataIndex="singerName"
+          dataIndex="singers"
           title="歌手"
           ellipsis
           width={200}
-          sorter={(a: ISongSheetItem, b: ISongSheetItem) => {
-            return a.singerName !== b.singerName
-              ? a.singerName > b.singerName
-                ? 1
-                : -1
-              : 0;
+          render={(value: ISingerInfo[]) => {
+            return (
+              <div>
+                {value.map((item) => (
+                  <span
+                    key={item.id}
+                    className="singer-name"
+                    onClick={() => toSingerDetail(item.id)}
+                  >
+                    {item.name}
+                  </span>
+                ))}
+              </div>
+            );
           }}
         />
         <Table.Column
@@ -203,6 +227,16 @@ const SongSheet: React.FC<SongSheetProps> = (props) => {
           }}
           ellipsis
           width={200}
+          render={(value: any, record: ISongSheetItem) => {
+            return (
+              <span
+                onClick={() => toAlbum(record.albumId)}
+                className="album-name"
+              >
+                {record.album}
+              </span>
+            );
+          }}
         />
         <Table.Column
           dataIndex="duration"

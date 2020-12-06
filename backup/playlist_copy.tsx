@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, useContext } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import {
   FireFilled,
   PlayCircleOutlined,
@@ -12,14 +12,14 @@ import { parseDate, parsePlayCount } from "../../utils";
 import PlaylistInfo from "../../common/PlaylistInfo";
 import axios from "../../network";
 import { connect } from "react-redux";
+import { UnionStateTypes } from "../../store";
 import { getPushPlayQueueAction } from "../../common/Player/store";
 import { message } from "antd";
-import { match, useHistory } from "react-router-dom";
-import { SetHistoryStackContext } from "../Home";
 
 interface PlaylistProps {
+  playlistShow: boolean;
+  id?: string;
   pushPlayQueue: (ids: string | Array<string>) => void;
-  match: match;
 }
 
 interface IDetail {
@@ -47,10 +47,7 @@ const PlayList: React.FC<PlaylistProps> = (props) => {
   // 歌单描述信息，创作者信息等等
   const [detail, setDetail] = useState<IDetail>();
   const isAdded = useRef(false);
-  const { pushPlayQueue } = props;
-  const match = props.match as match<{ id: string }>;
-  const history = useHistory();
-  const context = useContext(SetHistoryStackContext);
+  const { playlistShow, pushPlayQueue } = props;
 
   useEffect(() => {
     function parseSubscriber(subscribers: Array<any>): Array<ISubscriber> {
@@ -96,11 +93,11 @@ const PlayList: React.FC<PlaylistProps> = (props) => {
       setInfo(parseInfo(data.playlist));
     }
 
-    if (match.params.id) {
+    if (props.id) {
       setInfo(undefined);
-      fetchPlaylistInfo(match.params.id);
+      fetchPlaylistInfo(props.id);
     }
-  }, [match.params.id]);
+  }, [props.id]);
 
   function pushPlayQueueAll() {
     if (isAdded.current) {
@@ -114,14 +111,9 @@ const PlayList: React.FC<PlaylistProps> = (props) => {
     }
   }
 
-  function toTotalPlaylist(type: string) {
-    context.setHistoryStack("push", "totalPlaylist");
-    history.push("/totalPlaylist/" + type);
-  }
-
   return (
     <>
-      <div className="playlist">
+      <div className={`${playlistShow ? "playlist" : "playlist hidden"}`}>
         <div>
           <div className="playlist-top">
             <div className="cover-image ">
@@ -174,11 +166,7 @@ const PlayList: React.FC<PlaylistProps> = (props) => {
                 <div className="playlist-detail-panel-4">
                   标签:
                   {detail.tags.map((tag) => {
-                    return (
-                      <span key={tag} onClick={() => toTotalPlaylist(tag)}>
-                        {tag}
-                      </span>
-                    );
+                    return <span key={tag}>{tag}</span>;
                   })}
                 </div>
               )}
@@ -209,6 +197,13 @@ const PlayList: React.FC<PlaylistProps> = (props) => {
   );
 };
 
+const mapStateToProps = (state: UnionStateTypes) => {
+  const home = state.home;
+  return {
+    playlistShow: home.showMap.get("playlist") as boolean
+  };
+};
+
 const mapDispatchToProps = (dispatch: any) => {
   return {
     pushPlayQueue(ids: string | Array<string>) {
@@ -217,4 +212,7 @@ const mapDispatchToProps = (dispatch: any) => {
   };
 };
 
-export default connect(null, mapDispatchToProps)(React.memo(PlayList));
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(React.memo(PlayList));

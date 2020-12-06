@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Table, message } from "antd";
 import * as types from "./types";
 import {
@@ -13,6 +13,8 @@ import {
   getChangePlayIndexAction
 } from "../../common/Player/store";
 import { UnionStateTypes } from "../../store";
+import { useHistory } from "react-router-dom";
+import { SetHistoryStackContext } from "../../pages/Home";
 
 const AlbumSongs: React.FC<types.AlbumSongsProps> = (props) => {
   const {
@@ -25,6 +27,8 @@ const AlbumSongs: React.FC<types.AlbumSongsProps> = (props) => {
     changePlayIndex,
     willPlaylistId
   } = props;
+  const context = useContext(SetHistoryStackContext);
+  const history = useHistory();
 
   function renderIndex(value: any, record: ISearchOfSongItem) {
     return (
@@ -72,6 +76,18 @@ const AlbumSongs: React.FC<types.AlbumSongsProps> = (props) => {
     );
   }
 
+  function toSingerDetail(id: string) {
+    if (!id) return;
+    context.setHistoryStack("push", "singerDetail");
+    history.push("/singerDetail/" + id);
+  }
+
+  function toAlbum(id: string) {
+    if (!id) return;
+    context.setHistoryStack("push", "album");
+    history.push("/album/" + id);
+  }
+
   return (
     <div className="album-songs">
       <Table
@@ -97,9 +113,38 @@ const AlbumSongs: React.FC<types.AlbumSongsProps> = (props) => {
           render={renderIndex}
         />
         <Table.Column title="操作" width={60} render={renderManipulation} />
-        <Table.Column title="音乐标题" dataIndex="name" />
-        <Table.Column title="歌手" dataIndex="singerName" />
-        <Table.Column title="专辑" dataIndex="album" />
+        <Table.Column title="音乐标题" dataIndex="name" ellipsis />
+        <Table.Column
+          title="歌手"
+          dataIndex="singers"
+          ellipsis
+          render={(value: ISingerInfo[]) => {
+            return value.map((item) => (
+              <span
+                key={item.id}
+                className="singer-name"
+                onClick={() => toSingerDetail(item.id)}
+              >
+                {item.name}
+              </span>
+            ));
+          }}
+        />
+        <Table.Column
+          title="专辑"
+          dataIndex="album"
+          ellipsis
+          render={(value: any, record: ISongSheetItem) => {
+            return (
+              <span
+                onClick={() => toAlbum(record.albumId)}
+                className="album-name"
+              >
+                {record.album}
+              </span>
+            );
+          }}
+        />
         <Table.Column title="时长" width={150} dataIndex="duration" />
         <Table.Column
           title="热度"

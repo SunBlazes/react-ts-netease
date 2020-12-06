@@ -1,7 +1,8 @@
 import {
   HeaderActionType,
   SET_USER_INFO,
-  UPDATE_USER_STATE
+  UPDATE_USER_STATE,
+  USER_LOG_OUT
 } from "./actionType";
 import axios from "../../../network";
 import { Dispatch } from "redux";
@@ -22,6 +23,12 @@ export const getUpdateUserStateAction = (state: boolean): HeaderActionType => {
   };
 };
 
+export const getUserLogOutAction = (): HeaderActionType => {
+  return {
+    type: USER_LOG_OUT
+  };
+};
+
 export const userLogIn = (
   params: LoginRequestConfig
 ): ((dispatch: Dispatch) => void) => {
@@ -34,7 +41,9 @@ export const userLogIn = (
     const { phone, password } = params;
     const querystring = `/login/cellphone?phone=${phone}&password=${password}`;
     axios
-      .get(querystring)
+      .get(querystring, {
+        withCredentials: true
+      })
       .then((res) => {
         message.destroy();
         let { data } = res;
@@ -47,8 +56,10 @@ export const userLogIn = (
         dispatch(getSetUserInfoAction(user));
         message.success({
           content: "登录成功",
+          duration: 1,
           onClose: () => dispatch(getChangeSignInShowAction(false))
         });
+        sessionStorage.setItem("islogin", "true");
       })
       .catch(() => {
         message.destroy();

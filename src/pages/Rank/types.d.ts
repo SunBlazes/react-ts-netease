@@ -1,9 +1,4 @@
-interface RankProps {
-  firstRequest: boolean;
-  show: boolean;
-  displaySingerRank: () => void;
-  changeShow: (type: showOfType) => void;
-}
+interface RankProps {}
 
 interface OfficialRankItemProps {
   picUrl: string;

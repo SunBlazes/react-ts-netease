@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { DownOutlined } from "@ant-design/icons";
 import CategoryItem from "./categoryItem";
 
@@ -11,8 +11,7 @@ const iconclass = [
 ];
 
 const AllCategories: React.FC<AllCategoriesProps> = (props) => {
-  const { categories, currCategory, changeCategory } = props;
-  const [show, changeShow] = useState(false);
+  const { categories, currCategory, changeCategory, show, changeShow } = props;
 
   function extendDropdown() {
     changeShow(!show);

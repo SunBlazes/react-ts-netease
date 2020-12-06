@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState, useContext } from "react";
+import React, { useRef, useEffect, useState, useContext, useMemo } from "react";
 import {
   HeartFilled,
   FolderAddOutlined,
@@ -13,37 +13,30 @@ import { UnionStateTypes } from "../../store";
 import { fetchPlayLyric } from "../Player/store";
 import Comments from "../comments";
 import SimiPlaylist from "../SimiPlaylist";
-import { PlaylistContext } from "../../pages/Home";
-import {
-  getChangeTypeShowAction,
-  getToggleTypeShowAction,
-  direction
-} from "../../pages/Home/store";
+import { SetHistoryStackContext } from "../../pages/Home";
 import classnames from "classnames";
+import { useHistory, withRouter, RouteComponentProps } from "react-router-dom";
 
 export interface SongDetailContentProps extends SongDetailContent {
-  toggleTypeShow: (direction: direction) => void;
+  hide: (flag: boolean) => void;
 }
 
-const SongDetailContent: React.FC<SongDetailContentProps> = (props) => {
-  const {
-    show,
-    fetchPlayLyric,
-    songDetail,
-    lyricStr,
-    playState,
-    changeShow,
-    toggleTypeShow
-  } = props;
-  const classes = classnames("zsw-song-detail-content", {
-    hidden: !show
-  });
+const SongDetailContent: React.FC<
+  SongDetailContentProps & RouteComponentProps
+> = (props) => {
+  const { show, fetchPlayLyric, songDetail, lyricStr, playState, hide } = props;
+  const classes = useMemo(() => {
+    return classnames("zsw-song-detail-content", {
+      hidden: !show
+    });
+  }, [show]);
   const scrollRef = useRef<HTMLDivElement>(null);
   const scrollInnerRef = useRef<HTMLDivElement>(null);
   const [lyrics, setLyrics] = useState<Array<LyricRegItem>>([]);
   const timerRef = useRef<any>();
   const [currLyricIndex, changeCurrLyricIndex] = useState(0);
-  const playlistContext = useContext(PlaylistContext);
+  const context = useContext(SetHistoryStackContext);
+  const history = useHistory();
 
   useEffect(() => {
     if (!lyricStr) {
@@ -150,21 +143,38 @@ const SongDetailContent: React.FC<SongDetailContentProps> = (props) => {
     };
   }, [playState, currLyricIndex, lyrics]);
 
+  useEffect(() => {
+    hide(false);
+  }, [props.location.pathname, hide]);
+
   function handleSimiPlaylistClick(id: string) {
-    playlistContext.changePlaylistId(id);
-    changeShow("playlist");
+    hide(false);
+    context.setHistoryStack("push", "playlist");
+    history.push("/playlist/" + id);
+  }
+
+  function toSingerDetail(id: string) {
+    hide(false);
+    context.setHistoryStack("push", "singerDetail");
+    history.push("/singerDetail/" + id);
+  }
+
+  function toAlbum(id: string) {
+    hide(false);
+    context.setHistoryStack("push", "album");
+    history.push("/album/" + id);
   }
 
   return (
     <CSSTransition
       in={show === true}
-      timeout={400}
+      timeout={{
+        enter: 400
+      }}
       mountOnEnter
       classNames={{
-        enter: "animate__animated",
-        enterActive: "animate__fadeIn",
-        exit: "animate__animated",
-        exitActive: "animate__fadeOut"
+        enter: "animate__animated enter",
+        enterActive: "animate__fadeIn"
       }}
     >
       <div className={classes}>
@@ -209,7 +219,7 @@ const SongDetailContent: React.FC<SongDetailContentProps> = (props) => {
                   {songDetail.name}
                   <ShrinkOutlined
                     className="shrink"
-                    onClick={() => toggleTypeShow("prev")}
+                    onClick={() => hide(false)}
                   />
                 </h3>
                 {songDetail.alia && (
@@ -218,9 +228,23 @@ const SongDetailContent: React.FC<SongDetailContentProps> = (props) => {
                   </p>
                 )}
                 <div className="zsw-song-detail-content-top-right-detail">
-                  专辑: <span className="album-name">{songDetail.album}</span>
+                  专辑:{" "}
+                  <span
+                    className="album-name"
+                    onClick={() => toAlbum(songDetail.albumId)}
+                  >
+                    {songDetail.album}
+                  </span>
                   歌手:
-                  <span className="singer-name">{songDetail.singerName}</span>
+                  {songDetail.singers.map((singer) => (
+                    <span
+                      className="singer-name"
+                      key={singer.id}
+                      onClick={() => toSingerDetail(singer.id)}
+                    >
+                      {singer.name}
+                    </span>
+                  ))}
                 </div>
                 <br />
                 <div
@@ -250,17 +274,25 @@ const SongDetailContent: React.FC<SongDetailContentProps> = (props) => {
               <div className="zsw-song-detail-content-bottom-title">
                 听友评论
               </div>
-              <Comments type="music" id={songDetail.id} />
+              {show && (
+                <Comments
+                  type="music"
+                  id={songDetail.id}
+                  beforeClickMoreComments={() => hide(false)}
+                />
+              )}
             </div>
-            <div className="zsw-song-detail-content-bottom-right">
-              <div className="zsw-song-detail-content-bottom-title">
-                包含这首歌的歌单
+            {show && (
+              <div className="zsw-song-detail-content-bottom-right">
+                <div className="zsw-song-detail-content-bottom-title">
+                  包含这首歌的歌单
+                </div>
+                <SimiPlaylist
+                  id={songDetail.id}
+                  onClick={handleSimiPlaylistClick}
+                />
               </div>
-              <SimiPlaylist
-                id={songDetail.id}
-                onClick={handleSimiPlaylistClick}
-              />
-            </div>
+            )}
           </div>
         </div>
       </div>
@@ -270,13 +302,11 @@ const SongDetailContent: React.FC<SongDetailContentProps> = (props) => {
 
 const mapStateToProps = (state: UnionStateTypes) => {
   const player = state.player;
-  const home = state.home;
   const id = player.playQueue[player.current];
 
   return {
     playState: player.playState,
-    lyricStr: player.playLyricMap.get(id),
-    show: home.showMap.get("songDetailContent") as boolean
+    lyricStr: player.playLyricMap.get(id)
   };
 };
 
@@ -284,12 +314,6 @@ const mapDispatchToProps = (dispatch: any) => {
   return {
     fetchPlayLyric(id: string) {
       dispatch(fetchPlayLyric(id));
-    },
-    changeShow(currType: showOfType) {
-      dispatch(getChangeTypeShowAction(currType));
-    },
-    toggleTypeShow(direction: direction) {
-      dispatch(getToggleTypeShowAction(direction));
     }
   };
 };
@@ -297,4 +321,4 @@ const mapDispatchToProps = (dispatch: any) => {
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(React.memo(SongDetailContent));
+)(withRouter(React.memo(SongDetailContent)));

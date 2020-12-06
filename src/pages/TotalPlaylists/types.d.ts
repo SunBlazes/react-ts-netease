@@ -1,9 +1,3 @@
-interface TotalPlaylistsProps {
-  firstRequest: boolean;
-  show: boolean;
-  changeShow: (currType: showOfType) => void;
-}
-
 interface ICategoryItem {
   name: string;
   category: number;
@@ -19,6 +13,8 @@ interface AllCategoriesProps {
   categories: CategoryType;
   currCategory: string;
   changeCategory: (category: string) => void;
+  show: boolean;
+  changeShow: (flag: boolean) => void;
 }
 
 interface CategoryItemProps {

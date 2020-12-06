@@ -4,15 +4,12 @@ import OfficialRankItem from "./officialRankItem";
 import axios from "../../network";
 import { LoadingOutlined } from "@ant-design/icons";
 import PlaylistItem from "../../common/PlayListItem";
-import { PlaylistContext } from "../Home";
-import { connect } from "react-redux";
-import { getChangeTypeShowAction } from "../Home/store";
+import MainTabs from "../MainTabs";
+import { useHistory } from "react-router-dom";
+import { SetHistoryStackContext } from "../Home";
 
-const Rank: React.FC<RankProps> = (props) => {
-  const { show, displaySingerRank, changeShow } = props;
-  const classes = classnames("total-ranks", {
-    show
-  });
+const Rank: React.FC<RankProps> = () => {
+  const classes = classnames("total-ranks");
   const [loading, setLoading] = useState(false);
   const [officialRankData, setOfficialRankData] = useState<
     Array<OfficialRankItemProps>
@@ -20,7 +17,8 @@ const Rank: React.FC<RankProps> = (props) => {
   const [globalRankData, setGlobalRankData] = useState<Array<IPlaylistItem>>(
     []
   );
-  const playlistContext = useContext(PlaylistContext);
+  const context = useContext(SetHistoryStackContext);
+  const history = useHistory();
 
   useEffect(() => {
     function parseOfficialRank(data: any[]) {
@@ -83,16 +81,17 @@ const Rank: React.FC<RankProps> = (props) => {
 
   function handleItemClick(id: string, type?: string) {
     if (!type) {
-      playlistContext.changePlaylistId(id);
-      changeShow("playlist");
+      context.setHistoryStack("push", "playlist");
+      history.push("/playlist/" + id);
       return;
     }
-    return displaySingerRank();
+    return history.push("/singerRank");
   }
 
   return (
     <div className={classes}>
       <div>
+        <MainTabs name="rank" />
         {loading ? (
           <div className="total-rank-loading">
             <LoadingOutlined />
@@ -135,12 +134,4 @@ const Rank: React.FC<RankProps> = (props) => {
   );
 };
 
-const mapDispatchToProps = (dispatch: any) => {
-  return {
-    changeShow(currType: showOfType) {
-      dispatch(getChangeTypeShowAction(currType));
-    }
-  };
-};
-
-export default connect(null, mapDispatchToProps)(React.memo(Rank));
+export default React.memo(Rank);

@@ -1,8 +1,3 @@
-interface SingerDetailProps {
-  id: string;
-  show: boolean;
-}
-
 interface SingerAlbumProps {
   id: string;
   show: boolean;
@@ -59,7 +54,6 @@ interface ISingerDesc {
 interface SingerMVProps {
   id: string;
   show: boolean;
-  changeShow: (currType: showOfType) => void;
 }
 
 interface ISingerMVItem {

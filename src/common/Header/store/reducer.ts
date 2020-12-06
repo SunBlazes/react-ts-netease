@@ -1,5 +1,5 @@
 import { HeaderActionType } from "./actionType";
-import { SET_USER_INFO, UPDATE_USER_STATE } from "./actionType";
+import { SET_USER_INFO, UPDATE_USER_STATE, USER_LOG_OUT } from "./actionType";
 
 const defaultState: HeaderStoreStateProps = {
   userState: false,
@@ -9,6 +9,14 @@ const defaultState: HeaderStoreStateProps = {
     userId: ""
   }
 };
+
+function reset(state: HeaderStoreStateProps) {
+  state.userState = false;
+  state.user.avatarUrl = "";
+  state.user.nickname = "";
+  state.user.userId = "";
+  return state;
+}
 
 const HeaderReducer = (state = defaultState, action: HeaderActionType) => {
   switch (action.type) {
@@ -21,6 +29,10 @@ const HeaderReducer = (state = defaultState, action: HeaderActionType) => {
       const newState: HeaderStoreStateProps = JSON.parse(JSON.stringify(state));
       newState.userState = action.state;
       return newState;
+    }
+    case USER_LOG_OUT: {
+      const newState: HeaderStoreStateProps = JSON.parse(JSON.stringify(state));
+      return reset(newState);
     }
     default:
       return state;

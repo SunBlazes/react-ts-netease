@@ -1,18 +1,17 @@
 .playlist {
-  position: absolute;
-  left: 0;
-  bottom: 0;
-  right: 0;
-  z-index: 1001;
-  top: 0;
-  background-color: snow;
-
-  &.hidden {
-    display: none;
+  height: calc(100vh - 50px - 56px );
+  overflow: hidden;
+  overflow-y: scroll;
+  @extend %scroll-bar;
+  > * {
+    user-select: none;
   }
-
   > div {
+    padding: 0 30px;
+    margin: 0 auto;
     background-color: snow;
+    min-height: 100%;
+    min-width: 800px;
   }
 }
 

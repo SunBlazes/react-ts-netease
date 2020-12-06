@@ -1,20 +1,21 @@
 .zsw-singer-detail {
-  position: absolute;
-  z-index: 1002;
-  top: 0;
-  right: 0;
-  left: 0;
-  bottom: 0;
+  height: calc(100vh - 50px - 56px );
+  overflow: hidden;
+  overflow-y: scroll;
   background-color: white;
-
-  &.hidden {
-    display: none;
+  @extend %scroll-bar;
+  > * {
+    user-select: none;
   }
   > div {
+    height: 100%;
+    margin: 0 auto;
     background-color: white;
+    min-width: 800px;
   }
-
+  
   .zsw-singer-detail-top {
+    padding: 0 30px;
     padding: 25px 30px;
     overflow: hidden;
     margin-bottom: 50px;

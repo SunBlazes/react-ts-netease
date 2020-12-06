@@ -1,15 +1,13 @@
-import React, { useState } from "react";
-import { Menu } from "antd";
-import { MenuInfo } from "_rc-menu@8.6.1@rc-menu/lib/interface";
+import React, { useContext } from "react";
 import Recommend from "../Recommend";
 import { CSSTransition } from "react-transition-group";
 import TotalPlaylists from "../TotalPlaylists";
 import Rank from "../Rank";
 import SingerRank from "../SingerRank";
-import { connect } from "react-redux";
-import { UnionStateTypes } from "../../store";
-import { getChangeTypeShowAction } from "../Home/store/actionCreator";
 import classnames from "classnames";
+import KeepAlive from "react-activation";
+import { Route, useHistory } from "react-router-dom";
+import { SetHistoryStackContext } from "../Home";
 
 type currentType =
   | "recommend"
@@ -18,130 +16,86 @@ type currentType =
   | "singer"
   | "singerRank";
 
-interface SearchMusicProps {
-  current: currentType;
-  changeShow: (currType: showOfType) => void;
-  show: boolean;
-}
+interface SearchMusicProps {}
 
-const SearchMusic: React.FC<SearchMusicProps> = (props) => {
-  const { current, changeShow, show } = props;
-  const [firstRequest, setFirstRequest] = useState({
-    recommend: true,
-    totalPlaylist: false,
-    rank: false,
-    singer: false,
-    singerRank: false
-  });
-  const classes = classnames("search-music", {
-    hidden: !show
-  });
+const SearchMusic: React.FC<SearchMusicProps> = () => {
+  const history = useHistory();
+  const classes = classnames("search-music");
+  const context = useContext(SetHistoryStackContext);
 
-  function handleItemClick(e: MenuInfo) {
-    const key = e.key as currentType;
-    changeShow(key);
-    const _firstRequest = { ...firstRequest };
-    if (!_firstRequest[key]) {
-      _firstRequest[key] = true;
-      setFirstRequest(_firstRequest);
-    }
+  function moreClick() {
+    context.setHistoryStack("push", "totalPlaylist");
+    history.push("/totalPlaylist");
   }
 
-  function returnTransition(type: currentType, el: React.ReactElement) {
+  function returnTransition(
+    type: currentType,
+    el: React.ReactElement,
+    path?: string
+  ) {
+    const _path = path ? path : "/" + type;
     return (
-      <CSSTransition
-        in={current === type}
-        timeout={400}
-        mountOnEnter={true}
-        classNames={{
-          enter: "animate__animated",
-          enterActive: "animate__fadeIn"
+      <Route path={_path}>
+        {({ location }) => {
+          return (
+            <CSSTransition
+              in={
+                location.pathname.includes(type) ||
+                (type === "recommend" && location.pathname === "/")
+              }
+              timeout={200}
+              mountOnEnter={true}
+              unmountOnExit
+              classNames={{
+                enter: "animate__animated",
+                enterActive: "animate__fadeIn",
+                exit: "animate__animated",
+                exitActive: "animate__fadeOut"
+              }}
+            >
+              <KeepAlive name={type}>{el}</KeepAlive>
+            </CSSTransition>
+          );
         }}
-      >
-        {el}
-      </CSSTransition>
+      </Route>
     );
-  }
-
-  function displaySingerRank() {
-    changeShow("singerRank");
   }
 
   return (
     <div className={classes}>
-      <div className="nav">
-        <Menu
-          mode="horizontal"
-          selectedKeys={[current]}
-          onClick={handleItemClick}
-        >
-          <Menu.Item title="个性推荐" key="recommend">
-            个性推荐
-          </Menu.Item>
-          <Menu.Item title="歌单" key="totalPlaylist">
-            歌单
-          </Menu.Item>
-          <Menu.Item title="排行榜" key="rank">
-            排行榜
-          </Menu.Item>
-          <Menu.Item title="歌手" key="singer">
-            歌手
-          </Menu.Item>
-        </Menu>
-      </div>
       <div className="search-music-content">
         {returnTransition(
           "recommend",
-          <Recommend
-            firstRequest={firstRequest.recommend}
-            show={current === "recommend"}
-            moreClick={() => changeShow("playlist")}
-          />
+          <Recommend moreClick={moreClick} />,
+          "/"
         )}
-        {returnTransition(
-          "totalPlaylist",
-          <TotalPlaylists
-            firstRequest={firstRequest.totalPlaylist}
-            show={current === "totalPlaylist"}
-          />
-        )}
-        {returnTransition(
-          "rank",
-          <Rank
-            displaySingerRank={displaySingerRank}
-            firstRequest={firstRequest.rank}
-            show={current === "rank"}
-          />
-        )}
-        {returnTransition(
-          "singerRank",
-          <SingerRank show={current === "singerRank"} />
-        )}
+        <Route path="/totalPlaylist/:type?">
+          {(render) => {
+            return (
+              <CSSTransition
+                in={render.location.pathname.includes("totalPlaylist")}
+                timeout={200}
+                mountOnEnter={true}
+                unmountOnExit
+                classNames={{
+                  enter: "animate__animated",
+                  enterActive: "animate__fadeIn",
+                  exit: "animate__animated",
+                  exitActive: "animate__fadeOut"
+                }}
+              >
+                <KeepAlive>
+                  <TotalPlaylists match={render.match!} />
+                </KeepAlive>
+              </CSSTransition>
+            );
+          }}
+        </Route>
+        {returnTransition("rank", <Rank />)}
+        {returnTransition("singerRank", <SingerRank />)}
       </div>
     </div>
   );
 };
 
-const mapStateToProps = (
-  state: UnionStateTypes
-): {
-  current: currentType;
-} => {
-  const home = state.home;
-  return {
-    current: home.currLinkedItem.currType as currentType
-  };
-};
-
-const mapDispatchToProps = (dispatch: any) => {
-  return {
-    changeShow(currType: showOfType) {
-      dispatch(getChangeTypeShowAction(currType));
-    }
-  };
-};
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(React.memo(SearchMusic));
+export default React.memo(SearchMusic);

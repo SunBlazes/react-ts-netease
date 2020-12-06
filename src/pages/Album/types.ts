@@ -1,9 +1,3 @@
-export interface AlbumProps {
-  setPlayDetailMap: (map: Map<string, PlayDetailItem>) => void;
-  id: string;
-  show: boolean;
-}
-
 export interface AlbumSongsProps {
   songs: IAlbumSongItem[];
   loading: boolean;
@@ -24,6 +18,7 @@ export interface AlbumInfo {
   artistName: string;
   publishTime: number;
   shareCount: number;
+  id: string;
 }
 
 export interface IAlbumSongItem extends PlayDetailItem {

@@ -4,9 +4,8 @@ import axios from "../../network";
 import { LoadingOutlined } from "@ant-design/icons";
 import { parseDate } from "../../utils";
 import SingerRankItem from "./singerRankItem";
-import { connect } from "react-redux";
-import { getChangeTypeShowAction } from "../Home/store/actionCreator";
-import { SingerDetailContext } from "../Home";
+import { SetHistoryStackContext } from "../Home";
+import { useHistory } from "react-router-dom";
 
 type currType = "华语" | "欧美" | "韩国" | "日本";
 
@@ -16,29 +15,25 @@ typeMap.set("欧美", 2);
 typeMap.set("韩国", 3);
 typeMap.set("日本", 4);
 
-interface SingerRankProps extends SingerRank {
-  changeShow: (currType: showOfType) => void;
-}
+interface SingerRankProps extends SingerRank {}
 
-const SingerRank: React.FC<SingerRankProps> = (props) => {
-  const { show, changeShow } = props;
-  const classes = classnames("total-singer-rank", {
-    show
-  });
+const SingerRank: React.FC<SingerRankProps> = () => {
+  const classes = classnames("total-singer-rank");
   const [currType, setCurrType] = useState<currType>("华语");
   const [singerData, setSingerData] = useState<ISingerItemInfo[]>([]);
   const totalScore = useRef(0);
   const [updateTime, setUpdateTime] = useState(0);
   const [loading, setLoading] = useState(false);
-  const singerDetailContext = useContext(SingerDetailContext);
+  const context = useContext(SetHistoryStackContext);
+  const history = useHistory();
 
   function hanldeTabItemClick(name: currType) {
     setCurrType(name);
   }
 
   function handleRankItemClick(id: string) {
-    changeShow("singerDetail");
-    singerDetailContext.changeSingerId(id);
+    context.setHistoryStack("push", "singerDetail");
+    history.push("/singerDetail/" + id);
   }
 
   useEffect(() => {
@@ -115,11 +110,13 @@ const SingerRank: React.FC<SingerRankProps> = (props) => {
           >
             日本
           </div>
-          {updateTime && (
+          {updateTime ? (
             <div className="total-singer-rank-tab-updateTime">
               <span>更新时间:</span>
               {parseDate("mm月dd日", updateTime)}
             </div>
+          ) : (
+            ""
           )}
         </div>
         <div className="total-singer-rank-content">
@@ -149,12 +146,4 @@ const SingerRank: React.FC<SingerRankProps> = (props) => {
   );
 };
 
-const mapDispatchToProps = (dispatch: any) => {
-  return {
-    changeShow(currType: showOfType) {
-      dispatch(getChangeTypeShowAction(currType));
-    }
-  };
-};
-
-export default connect(null, mapDispatchToProps)(React.memo(SingerRank));
+export default React.memo(SingerRank);

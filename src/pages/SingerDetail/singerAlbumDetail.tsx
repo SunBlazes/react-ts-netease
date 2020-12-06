@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import SingerAlbumItem from "./singerAlbumItem";
 import { LoadingOutlined, RightOutlined } from "@ant-design/icons";
 import axios from "../../network";
-import { parseTime, mergeSingerNames } from "../../utils";
+import { parseTime, mergeSingers } from "../../utils";
 import classnames from "classnames";
 import { connect } from "react-redux";
 import { UnionStateTypes } from "../../store";
@@ -49,7 +49,7 @@ const SingerAlbumDetail: React.FC<SingerAlbumDetailProps> = (props) => {
       return message.error({
         content: "因合作方要求，该资源暂时下架>_<"
       });
-    if (!onlyPushOnce.current) {
+    if (!onlyPushOnce.current || currIndex === -1) {
       pushPlayQueue(trackIdsRef.current);
       onlyPushOnce.current = true;
     }
@@ -70,12 +70,13 @@ const SingerAlbumDetail: React.FC<SingerAlbumDetailProps> = (props) => {
         _map.set(item.id, {
           name,
           duration: parseTime(dt),
-          singerName: mergeSingerNames(ar),
+          singers: mergeSingers(ar),
           picUrl: al.picUrl,
           album: al.name,
           alia: alia.join(" "),
           id,
-          hasCopyRight: noCopyrightRcmd || fee ? false : true
+          hasCopyRight: noCopyrightRcmd || fee ? false : true,
+          albumId: item.al.id
         });
         _arr.push({
           name,

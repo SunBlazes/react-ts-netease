@@ -54,10 +54,10 @@ export default (state = defaultState, action: PlayerActionType) => {
         for (let i = 0; i < id.length; i++) {
           const item = newState.playDetailMap.get(id[i]);
           if (item) {
-            const { name, singerName, duration, id } = item;
+            const { name, singers, duration, id } = item;
             newState.willPlayQueue.push({
               name,
-              singerName,
+              singers,
               duration,
               id
             });
@@ -67,10 +67,10 @@ export default (state = defaultState, action: PlayerActionType) => {
         newState.playQueue.splice(newState.current + 1, 0, id);
         const item = newState.playDetailMap.get(id);
         if (item) {
-          const { name, singerName, duration, id } = item;
+          const { name, singers, duration, id } = item;
           newState.willPlayQueue.splice(newState.current + 1, 0, {
             name,
-            singerName,
+            singers,
             duration,
             id
           });
@@ -95,7 +95,6 @@ export default (state = defaultState, action: PlayerActionType) => {
       const { items } = action;
       const newState = clone(state);
       newState.playDetailMap = new Map([...newState.playDetailMap, ...items]);
-      console.log(newState);
       return newState;
     }
     case CHANGE_PLAY_INDEX: {

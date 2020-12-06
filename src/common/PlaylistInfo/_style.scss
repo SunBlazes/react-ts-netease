@@ -44,39 +44,50 @@
   }
 }
 
-.playlist-info {
-  .songsheet-table {
-    display: none;
-    &.show {
-      display: block;
-    }
-    .manipulation {
-      display: flex;
-      justify-content: space-around;
+// .playlist-info {
+  
+// }
 
-      .anticon {
-        font-size: 1rem;
-        cursor: pointer;
-        color: #ccc;
-      }
-    }
-
-    .ant-table-cell {
-      .ant-table-column-sorter {
-        visibility: hidden;
-      }
-      .anticon {
-        color: transparentize($color: $theme-color, $amount: .5);
-        &.play {
-          color: $theme-color;
-        }
-      }
-      &:hover {
-        .ant-table-column-sorter {
-          visibility: visible;
-        }
-      }
-    }
-    
+.songsheet-table {
+  display: none;
+  &.show {
+    display: block;
   }
+  .manipulation {
+    display: flex;
+    justify-content: space-around;
+
+    .anticon {
+      font-size: 1rem;
+      cursor: pointer;
+      color: #ccc;
+    }
+  }
+
+  .singer-name, .album-name {
+    cursor: pointer;
+    margin-right: 5px;
+    color: rgba($color: #000000, $alpha: .6);
+    &:hover {
+      color: rgba($color: #000000, $alpha: .9);
+    }
+  }
+
+  .ant-table-cell {
+    .ant-table-column-sorter {
+      visibility: hidden;
+    }
+    .anticon {
+      color: transparentize($color: $theme-color, $amount: .5);
+      &.play {
+        color: $theme-color;
+      }
+    }
+    &:hover {
+      .ant-table-column-sorter {
+        visibility: visible;
+      }
+    }
+  }
+  
 }

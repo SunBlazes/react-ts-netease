@@ -138,6 +138,15 @@
     overflow-y: auto;
     background-color: snow;
 
+    .singer-name {
+      cursor: pointer;
+      margin-right: 5px;
+      color: rgba($color: #000000, $alpha: .6);
+      &:hover {
+        color: rgba($color: #000000, $alpha: .9);
+      }
+    }
+
     .will-play-list-title {
       padding: 10px 0;
       height: 75x;

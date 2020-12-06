@@ -4,12 +4,11 @@ import axios from "../../network";
 import classnames from "classnames";
 import { LoadingOutlined } from "@ant-design/icons";
 import { parseTime, parsePlayCount } from "../../utils";
-import { MVContext } from "../Home";
-import { connect } from "react-redux";
-import { getChangeTypeShowAction } from "../Home/store";
+import { SetHistoryStackContext } from "../Home";
+import { useHistory } from "react-router-dom";
 
 const SingerMV: React.FC<SingerMVProps> = (props) => {
-  const { id, show, changeShow } = props;
+  const { id, show } = props;
   const [mvs, setMVs] = useState<ISingerMVItem[]>([]);
   const classes = classnames("zsw-singer-mvs", {
     show
@@ -17,8 +16,9 @@ const SingerMV: React.FC<SingerMVProps> = (props) => {
   const [offset, setOffset] = useState(0);
   const more = useRef(true);
   const [firstRequest, setFirstRequest] = useState(false);
-  const context = useContext(MVContext);
+  const context = useContext(SetHistoryStackContext);
   const [loading, setLoading] = useState(false);
+  const history = useHistory();
 
   useEffect(() => {
     if (show) {
@@ -96,8 +96,8 @@ const SingerMV: React.FC<SingerMVProps> = (props) => {
   }, [id, offset, firstRequest]);
 
   function handleClick(id: string) {
-    context.changeMVId(id);
-    changeShow("mv");
+    context.setHistoryStack("push", "mv");
+    history.push("/mv/" + id);
   }
 
   return (
@@ -121,12 +121,4 @@ const SingerMV: React.FC<SingerMVProps> = (props) => {
   );
 };
 
-const mapDispatchToProps = (dispatch: any) => {
-  return {
-    changeShow(currType: showOfType) {
-      dispatch(getChangeTypeShowAction(currType));
-    }
-  };
-};
-
-export default connect(null, mapDispatchToProps)(React.memo(SingerMV));
+export default React.memo(SingerMV);

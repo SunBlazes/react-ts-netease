@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Table } from "antd";
 import { connect } from "react-redux";
 import { UnionStateTypes } from "../../store";
@@ -7,8 +7,9 @@ import {
   getChangePlayIndexAction,
   getPushPlayQueueAction
 } from "./store";
-import { getRemoveTypeShowAction } from "../../pages/Home/store";
 import { SoundFilled, DeleteOutlined } from "@ant-design/icons";
+import { useHistory } from "react-router-dom";
+import { SetHistoryStackContext } from "../../pages/Home";
 
 const WillPLayTable: React.FC<WillPlayTableProps> = (props) => {
   const {
@@ -17,8 +18,7 @@ const WillPLayTable: React.FC<WillPlayTableProps> = (props) => {
     changePlayIndex,
     current,
     playState,
-    pushPlayQueue,
-    removeShowType
+    pushPlayQueue
   } = props;
 
   function hanldeDoubleClick(id: string) {
@@ -28,7 +28,14 @@ const WillPLayTable: React.FC<WillPlayTableProps> = (props) => {
 
   function clearAll() {
     pushPlayQueue([]);
-    removeShowType("songDetailContent");
+  }
+
+  const context = useContext(SetHistoryStackContext);
+  const history = useHistory();
+
+  function toSingerDetail(id: string) {
+    context.setHistoryStack("push", "singerDetail");
+    history.push("/singerDetail/" + id);
   }
 
   return (
@@ -74,8 +81,19 @@ const WillPLayTable: React.FC<WillPlayTableProps> = (props) => {
           className="will-play-list-name"
         />
         <Table.Column
-          dataIndex="singerName"
+          dataIndex="singers"
           className="will-play-list-singername"
+          render={(value: ISingerInfo[]) =>
+            value.map((item) => (
+              <span
+                key={item.id}
+                onClick={() => toSingerDetail(item.id)}
+                className="singer-name"
+              >
+                {item.name}
+              </span>
+            ))
+          }
         />
         <Table.Column
           dataIndex="duration"
@@ -113,9 +131,6 @@ const mapDispatchToProps = (dispatch: any) => {
     },
     pushPlayQueue(ids: string | Array<string>) {
       dispatch(getPushPlayQueueAction(ids, true));
-    },
-    removeShowType(showType: showOfType) {
-      dispatch(getRemoveTypeShowAction(showType));
     }
   };
 };

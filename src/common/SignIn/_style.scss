@@ -6,12 +6,26 @@
   left: 0;
   background-color: transparentize(black, .9);
   z-index: 2000;
+  animation-duration: 200ms;
   display: none;
+
+  @keyframes signin-enter {
+    from {
+      opacity: 0;
+      -webkit-transform: scale3d(0.3, 0.3, 0.3);
+      transform: scale3d(0.3, 0.3, 0.3);
+    }
+  
+    50% {
+      opacity: 1;
+    }
+  }
 
   &.show {
     display: block;
+    animation-name: signin-enter;
   }
-  
+
   .content {
     padding: $signin-padding;
     left: 50%;

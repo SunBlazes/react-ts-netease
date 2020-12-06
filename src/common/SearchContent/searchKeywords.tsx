@@ -2,39 +2,33 @@ import React, { useState, useEffect, useContext } from "react";
 import * as types from "./type";
 import { UserOutlined } from "@ant-design/icons";
 import axios from "../../network";
-import { connect } from "react-redux";
-import { getChangeTypeShowAction } from "../../pages/Home/store";
-import {
-  SingerDetailContext,
-  PlaylistContext,
-  AlbumContext
-} from "../../pages/Home";
+import { SetHistoryStackContext } from "../../pages/Home";
+import { useHistory } from "react-router-dom";
 
 const SearchKeywords: React.FC<SearchKeywordsProps> = (props) => {
-  const { value, changeTypeShow } = props;
+  const { value } = props;
   const [data, setData] = useState<types.ISearchSuggestions>({
     songs: [],
     albums: [],
     artists: [],
     playlists: []
   });
-  const singerDetailContext = useContext(SingerDetailContext);
-  const playlistContext = useContext(PlaylistContext);
-  const albumContext = useContext(AlbumContext);
+  const context = useContext(SetHistoryStackContext);
+  const history = useHistory();
 
   function handleSingerClick(id: string) {
-    singerDetailContext.changeSingerId(id);
-    changeTypeShow("singerDetail");
+    context.setHistoryStack("push", "sinerDetail");
+    history.push("/singerDetail/" + id);
   }
 
   function handlePlaylistClick(id: string) {
-    playlistContext.changePlaylistId(id);
-    changeTypeShow("playlist");
+    context.setHistoryStack("push", "playlist");
+    history.push("/playlist/" + id);
   }
 
   function handleAlbumClick(id: string) {
-    albumContext.changeAlbumId(id);
-    changeTypeShow("album");
+    context.setHistoryStack("push", "album");
+    history.push("/album/" + id);
   }
 
   // function handleSongClick() {
@@ -214,12 +208,4 @@ const SearchKeywords: React.FC<SearchKeywordsProps> = (props) => {
   );
 };
 
-const mapDispatchToProps = (dispatch: any) => {
-  return {
-    changeTypeShow(type: showOfType) {
-      dispatch(getChangeTypeShowAction(type));
-    }
-  };
-};
-
-export default connect(null, mapDispatchToProps)(React.memo(SearchKeywords));
+export default React.memo(SearchKeywords);

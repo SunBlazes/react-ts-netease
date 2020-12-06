@@ -135,7 +135,6 @@ const Player: React.FC<PlayerProps> = (props) => {
   }
 
   function onVolumnChanging(value: number) {
-    console.log(value);
     window.audio.volume = value;
     setVolumn(value);
   }

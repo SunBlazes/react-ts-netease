@@ -1,7 +1,7 @@
 import parsePlayCount from "./parsePlayCount";
 import parseDate from "./parseDate";
 import parseTime from "./parseTime";
-import mergeSingerNames from "./mergeSingerNames";
+import mergeSingers from "./mergeSingers";
 import parseLyrics from "./parseLyrics";
 import parseCopyright from "./parseCopyright";
 
@@ -9,7 +9,7 @@ export {
   parsePlayCount,
   parseDate,
   parseTime,
-  mergeSingerNames,
+  mergeSingers,
   parseLyrics,
   parseCopyright
 };

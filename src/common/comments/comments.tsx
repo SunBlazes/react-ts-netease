@@ -1,14 +1,20 @@
-import React, { useState, ChangeEvent, useEffect, useRef } from "react";
+import React, {
+  useState,
+  ChangeEvent,
+  useEffect,
+  useRef,
+  useContext
+} from "react";
 import CommentItem, { CommentItemProps, IBeReplied } from "./commentItem";
 import axios from "../../network";
 import { LoadingOutlined, RightOutlined } from "@ant-design/icons";
 import { Pagination, message } from "antd";
 import { PaginationProps } from "antd/es/pagination";
 import { connect } from "react-redux";
-import { getSetMoreCommentsAttrAction } from "./store";
-import { getChangeTypeShowAction } from "../../pages/Home/store";
 import { UnionStateTypes } from "../../store";
 import { getChangeSignInShowAction } from "../SignIn/store/actionCreator";
+import { useHistory } from "react-router-dom";
+import { SetHistoryStackContext } from "../../pages/Home";
 
 export interface IQueryParams {
   page: number;
@@ -53,8 +59,15 @@ export function parseComments(
     };
     _comments.push(comment);
   }
-  console.log(_comments);
   return _comments;
+}
+
+interface CommentsProps {
+  id: string;
+  type: commentType;
+  userState: boolean;
+  ChangeSignInShow: () => void;
+  beforeClickMoreComments?: () => void;
 }
 
 const Comments: React.FC<CommentsProps> = (props) => {
@@ -66,13 +79,13 @@ const Comments: React.FC<CommentsProps> = (props) => {
   const [moreHot, setMoreHot] = useState(false);
   const [popCommentsShow, setPopCommentsShow] = useState(false);
   const {
+    userState,
+    ChangeSignInShow,
     id,
     type,
-    setMoreCommentsAttr,
-    changeShow,
-    userState,
-    ChangeSignInShow
+    beforeClickMoreComments
   } = props;
+
   const [pagination, setPagination] = useState<PaginationProps>({
     current: 1
   });
@@ -86,7 +99,8 @@ const Comments: React.FC<CommentsProps> = (props) => {
     onChange: handlePageSizeChange
   });
   const $homeContent = useRef<HTMLDivElement>();
-
+  const context = useContext(SetHistoryStackContext);
+  const history = useHistory();
   const [queryParams, setQueryParams] = useState<IQueryParams>({
     page: 0,
     limit: 50
@@ -108,11 +122,9 @@ const Comments: React.FC<CommentsProps> = (props) => {
   }
 
   function handleMoreClick() {
-    setMoreCommentsAttr({
-      id,
-      type
-    });
-    changeShow("moreComments");
+    beforeClickMoreComments && beforeClickMoreComments();
+    context.setHistoryStack("push", "moreComments");
+    history.push(`/moreComments/${type}/${id}`);
   }
 
   useEffect(() => {
@@ -147,7 +159,6 @@ const Comments: React.FC<CommentsProps> = (props) => {
     async function fetchComments() {
       !isUnmount && setLoading(true);
       const { data } = await axios.get(fetchUrl(id, type));
-      console.log(data);
       if (queryParams.page === 0) {
         !isUnmount && setMoreHot(data.moreHot);
         !isUnmount && setPopComments(parseComments(data.hotComments));
@@ -284,12 +295,6 @@ const mapStateToProps = (state: UnionStateTypes) => {
 
 const mapDispatchToProps = (dispatch: any) => {
   return {
-    setMoreCommentsAttr(attr: MoreCommentsAttrType) {
-      dispatch(getSetMoreCommentsAttrAction(attr));
-    },
-    changeShow(type: showOfType) {
-      dispatch(getChangeTypeShowAction(type));
-    },
     ChangeSignInShow() {
       dispatch(getChangeSignInShowAction(true));
     }

@@ -1,8 +1,14 @@
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  useCallback,
+  useContext
+} from "react";
 import { Table, message } from "antd";
 import axios from "../../network";
 import classnames from "classnames";
-import { parseTime, mergeSingerNames, parseCopyright } from "../../utils";
+import { parseTime, mergeSingers, parseCopyright } from "../../utils";
 import {
   HeartOutlined,
   DownloadOutlined,
@@ -19,6 +25,8 @@ import {
   getChangePlayStateAction
 } from "../../common/Player/store";
 import ResultOfPagination from "./resultOfPagination";
+import { useHistory } from "react-router-dom";
+import { SetHistoryStackContext } from "../../pages/Home";
 
 export interface IQueryParams {
   page: number;
@@ -55,6 +63,8 @@ const ResultOfSongs: React.FC<ResultOfSongsProps> = (props) => {
     page: 0,
     limit: 100
   });
+  const context = useContext(SetHistoryStackContext);
+  const history = useHistory();
 
   const handlePageSizeChange = useCallback((page: number) => {
     setQueryParams((data) => {
@@ -107,9 +117,8 @@ const ResultOfSongs: React.FC<ResultOfSongsProps> = (props) => {
       return `/cloudsearch?keywords=${keywords}&offset=${offset}&limit=${limit}`;
     }
     function parseData(songs: any[]) {
-      console.log(songs);
       const _arr: ISearchOfSongItem[] = [];
-
+      if (!(songs instanceof Array)) return [];
       for (let i = 0; i < songs.length; i++) {
         const {
           al: { name, picUrl },
@@ -124,14 +133,15 @@ const ResultOfSongs: React.FC<ResultOfSongsProps> = (props) => {
         const copyright = parseCopyright(noCopyrightRcmd, fee);
         const parsedItem = {
           duration: parseTime(dt),
-          singerName: mergeSingerNames(ar),
+          singers: mergeSingers(ar),
           id,
           index: (i + 1).toString().padStart(2, "0"),
           album: name,
           picUrl,
           name: songs[i].name,
           hasCopyRight: copyright,
-          alia: alia.join(",")
+          alia: alia.join(","),
+          albumId: songs[i].al.id
         };
         if (copyright) {
           map.current.set(id, parsedItem);
@@ -146,15 +156,16 @@ const ResultOfSongs: React.FC<ResultOfSongsProps> = (props) => {
       setSongs([]);
       setShow(false);
       setLoading(true);
-      const { data } = await axios.get(returnUrl());
-      setPagination({
-        total: data.result.songCount
+      axios.get(returnUrl()).then(({ data }) => {
+        setPagination({
+          total: data.result.songCount
+        });
+        setSearchCount(data.result.songCount);
+        setSongs(parseData(data.result.songs));
+        setPlayDetailMap(map.current);
+        setLoading(false);
+        setShow(true);
       });
-      setSearchCount(data.result.songCount);
-      setSongs(parseData(data.result.songs));
-      setPlayDetailMap(map.current);
-      setLoading(false);
-      setShow(true);
     }
 
     if (keywords) {
@@ -179,6 +190,16 @@ const ResultOfSongs: React.FC<ResultOfSongsProps> = (props) => {
     );
   }
 
+  function toSingerDetail(id: string) {
+    context.setHistoryStack("push", "singerDetail");
+    history.push("/singerDetail/" + id);
+  }
+
+  function toAlbum(id: string) {
+    context.setHistoryStack("push", "album");
+    history.push("/album/" + id);
+  }
+
   return (
     <div className={classes}>
       <Table
@@ -201,8 +222,37 @@ const ResultOfSongs: React.FC<ResultOfSongsProps> = (props) => {
         />
         <Table.Column title="操作" width={65} render={renderManipulation} />
         <Table.Column title="音乐标题" ellipsis dataIndex="name" />
-        <Table.Column title="歌手" ellipsis dataIndex="singerName" />
-        <Table.Column title="专辑" ellipsis dataIndex="album" />
+        <Table.Column
+          title="歌手"
+          ellipsis
+          dataIndex="singers"
+          render={(value: ISingerInfo[]) => {
+            return value.map((item) => (
+              <span
+                key={item.id}
+                className="singer-name"
+                onClick={() => toSingerDetail(item.id)}
+              >
+                {item.name}
+              </span>
+            ));
+          }}
+        />
+        <Table.Column
+          title="专辑"
+          ellipsis
+          dataIndex="album"
+          render={(value: any, record: ISongSheetItem) => {
+            return (
+              <span
+                onClick={() => toAlbum(record.albumId)}
+                className="album-name"
+              >
+                {record.album}
+              </span>
+            );
+          }}
+        />
         <Table.Column title="时长" width={100} dataIndex="duration" />
         <Table.Column
           title="热度"

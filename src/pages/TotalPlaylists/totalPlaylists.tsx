@@ -6,9 +6,9 @@ import { LoadingOutlined } from "@ant-design/icons";
 import PlaylistItem from "../../common/PlayListItem";
 import { PaginationProps } from "antd/es/pagination";
 import { Pagination } from "antd";
-import { PlaylistContext } from "../Home";
-import { connect } from "react-redux";
-import { getChangeTypeShowAction } from "../Home/store";
+import { SetHistoryStackContext } from "../Home";
+import { useHistory, match } from "react-router-dom";
+import MainTabs from "../MainTabs";
 
 interface IQueryParams {
   page: number;
@@ -23,16 +23,19 @@ function toArray(obj: any) {
   return arr;
 }
 
+interface TotalPlaylistsProps {
+  match: match;
+}
+
 const TotalPlaylists: React.FC<TotalPlaylistsProps> = (props) => {
-  const { show, changeShow } = props;
-  const classes = classnames("total-playlists", {
-    show
-  });
+  const classes = classnames("total-playlists");
+  const match = props.match as match<{ type: string }>;
+  const type = match && match.params.type ? match.params.type : "全部歌单";
+  const [currCategory, setCurrCategory] = useState(type);
   const [categories, setCategories] = useState<CategoryType>([]);
   const [hotCategories, setHotCategories] = useState<Array<IHotCategoryItem>>(
     []
   );
-  const [currCategory, setCurrCategory] = useState("全部歌单");
   const [loading, setLoading] = useState(false);
   const [playlists, setPlaylists] = useState<Array<IPlaylistItem>>([]);
   const [queryParams, setQueryParams] = useState<IQueryParams>({
@@ -50,7 +53,10 @@ const TotalPlaylists: React.FC<TotalPlaylistsProps> = (props) => {
     showSizeChanger: false,
     onChange: handlePageSizeChange
   });
-  const playlistContext = useContext(PlaylistContext);
+  const context = useContext(SetHistoryStackContext);
+  const history = useHistory();
+  const wrapperRef = useRef<HTMLDivElement>(null);
+  const [show, changeShow] = useState(false);
 
   function handlePageSizeChange(page: number) {
     setQueryParams((data) => {
@@ -60,6 +66,29 @@ const TotalPlaylists: React.FC<TotalPlaylistsProps> = (props) => {
       };
     });
   }
+
+  useEffect(() => {
+    const wrapper = wrapperRef;
+    function handleWrapperClick(e: MouseEvent) {
+      const target = e.target as HTMLElement;
+      if (!target.classList.contains("all-categories-btn")) {
+        changeShow(false);
+      }
+    }
+    if (wrapper.current) {
+      wrapper.current.addEventListener("click", handleWrapperClick);
+    }
+
+    return () => {
+      if (wrapper.current) {
+        wrapper.current.removeEventListener("click", handleWrapperClick);
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    setCurrCategory(type === "另类" ? "另类/独立" : type);
+  }, [type]);
 
   useEffect(() => {
     function parseCategoryArray(arr: Array<any>) {
@@ -110,6 +139,9 @@ const TotalPlaylists: React.FC<TotalPlaylistsProps> = (props) => {
 
     fetchAllCategoriesData();
     fetchHotCategoriesData();
+    return () => {
+      console.log("unmount");
+    };
   }, []);
 
   useEffect(() => {
@@ -130,7 +162,6 @@ const TotalPlaylists: React.FC<TotalPlaylistsProps> = (props) => {
         });
       }
       const { data } = await axios.get(fetchUrl());
-      console.log(data);
       const _playlists = data.playlists as Array<any>;
       const arr: Array<IPlaylistItem> = [];
       for (let i = 0; i < _playlists.length; i++) {
@@ -142,7 +173,6 @@ const TotalPlaylists: React.FC<TotalPlaylistsProps> = (props) => {
           picUrl: item.coverImgUrl
         });
       }
-      console.log(data.total);
       setPagination({
         total: 500
       });
@@ -155,17 +185,20 @@ const TotalPlaylists: React.FC<TotalPlaylistsProps> = (props) => {
   }, [currCategory, queryParams]);
 
   function handleItemClick(id: string) {
-    playlistContext.changePlaylistId(id);
-    changeShow("playlist");
+    context.setHistoryStack("push", "playlist");
+    history.push("/playlist/" + id);
   }
 
   return (
-    <div className={classes}>
+    <div className={classes} ref={wrapperRef}>
       <div className="total-playlists-inner">
+        <MainTabs name="totalPlaylist" />
         <AllCategories
           categories={categories}
           currCategory={currCategory}
           changeCategory={setCurrCategory}
+          show={show}
+          changeShow={changeShow}
         />
         <div className="hot-categories">
           <span className="hot-categories-title">热门标签: </span>
@@ -213,12 +246,4 @@ const TotalPlaylists: React.FC<TotalPlaylistsProps> = (props) => {
   );
 };
 
-const mapDispatchToProps = (dispatch: any) => {
-  return {
-    changeShow(currType: showOfType) {
-      dispatch(getChangeTypeShowAction(currType));
-    }
-  };
-};
-
-export default connect(null, mapDispatchToProps)(React.memo(TotalPlaylists));
+export default React.memo(TotalPlaylists);

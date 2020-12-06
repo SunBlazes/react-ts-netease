@@ -1,17 +1,16 @@
 .search-result {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  right: 0;
-  left: 0;
+  height: calc(100vh - 50px - 56px );
+  overflow: hidden;
+  overflow-y: scroll;
+  @extend %scroll-bar;
   background-color: white;
-  z-index: 1001;
-
-  &.hidden {
-    display: none;
+  > div {
+    padding: 0 30px;
+    margin: 0 auto;
+    background-color: white;
+    min-width: 900px;
   }
-
-  > .search-result-header {
+  > div > .search-result-header {
     padding: 30px;
     font-size: .9rem;
     letter-spacing: 1px;
@@ -21,7 +20,7 @@
     }
   }
 
-  > .search-result-tabs {
+  > div > .search-result-tabs {
     border-bottom: 1px solid $theme-color;
     padding-left: 30px;
 
@@ -55,7 +54,7 @@
     }
   }
 
-  > .search-result-loading {
+  > div > .search-result-loading {
     text-align: center;
     line-height: 30px;
     > span {
@@ -64,7 +63,7 @@
     }
   }
 
-  > .result-of-songs {
+  > div > .result-of-songs {
     background-color: white;
     min-height: 100%;
     &.hidden {
@@ -77,6 +76,16 @@
       .pop {
         > div {
           background-color: rgba($color: grey, $alpha: .8);
+        }
+      }
+    }
+    .ant-table-row {
+      .singer-name, .album-name {
+        cursor: pointer;
+        margin-right: 5px;
+        color: rgba($color: #000000, $alpha: .6);
+        &:hover {
+          color: rgba($color: #000000, $alpha: .9);
         }
       }
     }
@@ -105,13 +114,13 @@
     }
   }
 
-  .result-of-pagination {
+  > div .result-of-pagination {
     text-align: center;
     height: 40px;
     margin-top: 20px;
   }
 
-  > .result-of-singers {
+  > div > .result-of-singers {
     background-color: white;
     min-height: 100%;
     &.hidden {
@@ -143,7 +152,7 @@
     }
   }
 
-  > .result-of-albums {
+  > div > .result-of-albums {
     min-height: 100%;
     background-color: #fff;
     &.hidden {
@@ -180,7 +189,7 @@
     }
   }
 
-  > .result-of-mvs {
+  > div > .result-of-mvs {
     padding: 20px 30px;
     background-color: white;
     min-height: 100%;
@@ -245,7 +254,7 @@
     }
   }
 
-  > .result-of-playlists {
+  > div > .result-of-playlists {
     background-color: white;
     min-height: 100%;
     &.hidden {

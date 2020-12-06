@@ -1,18 +1,18 @@
-import React from "react";
+import React, { useState } from "react";
 import { connect } from "react-redux";
 import { UnionStateTypes } from "../../store";
 import { CSSTransition } from "react-transition-group";
 import { ArrowsAltOutlined } from "@ant-design/icons";
 import SongDetailContent from "./songDetailContent";
-import { getChangeTypeShowAction } from "../../pages/Home/store";
 
 const SongDetail: React.FC<SongDetailProps> = (props) => {
-  const { songDetail, current, changeShow } = props;
+  const { songDetail, current } = props;
+  const [contentShow, setContentShow] = useState(false);
 
   return (
     <CSSTransition
       in={current !== -1}
-      timeout={400}
+      timeout={200}
       mountOnEnter
       classNames={{
         enter: "animate__animated",
@@ -31,7 +31,7 @@ const SongDetail: React.FC<SongDetailProps> = (props) => {
           />
           <div
             className="zsw-song-detail-enlarge"
-            onClick={() => changeShow("songDetailContent")}
+            onClick={() => setContentShow(true)}
           >
             <ArrowsAltOutlined />
           </div>
@@ -39,10 +39,18 @@ const SongDetail: React.FC<SongDetailProps> = (props) => {
         <div className="zsw-song-detail-info">
           <p>{songDetail?.name}</p>
           <p className="zsw-song-detail-info-singername">
-            {songDetail?.singerName}
+            {songDetail?.singers.map((singer) => {
+              return <span key={singer.id}>{singer.name}</span>;
+            })}
           </p>
         </div>
-        {songDetail && <SongDetailContent songDetail={songDetail} />}
+        {songDetail && (
+          <SongDetailContent
+            songDetail={songDetail}
+            show={contentShow}
+            hide={setContentShow}
+          />
+        )}
       </div>
     </CSSTransition>
   );
@@ -61,15 +69,4 @@ const mapStateToProps = (
   };
 };
 
-const mapDispatchToProps = (dispatch: any) => {
-  return {
-    changeShow(currType: showOfType) {
-      dispatch(getChangeTypeShowAction(currType));
-    }
-  };
-};
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(React.memo(SongDetail));
+export default connect(mapStateToProps)(React.memo(SongDetail));

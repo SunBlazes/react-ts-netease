@@ -1,13 +1,12 @@
 import React, { useState, useEffect, useContext } from "react";
 import classnames from "classnames";
 import axios from "../../network";
-import { parseTime, mergeSingerNames, parsePlayCount } from "../../utils";
+import { parseTime, mergeSingers, parsePlayCount } from "../../utils";
 import { CustomerServiceOutlined } from "@ant-design/icons";
 import { PaginationProps } from "antd/es/pagination";
 import ResultOfPagination from "./resultOfPagination";
-import { connect } from "react-redux";
-import { getChangeTypeShowAction } from "../Home/store";
-import { MVContext } from "../Home";
+import { SetHistoryStackContext } from "../Home";
+import { useHistory } from "react-router-dom";
 
 export interface IQueryParams {
   page: number;
@@ -15,7 +14,7 @@ export interface IQueryParams {
 }
 
 const ResultOfMVs: React.FC<ResultOfMVsProps> = (props) => {
-  const { keywords, setLoading, setSearchCount, changeTypeShow } = props;
+  const { keywords, setLoading, setSearchCount } = props;
   const [mvs, setMVs] = useState<ISearchOfMVItem[]>([]);
   const [queryParams, setQueryParams] = useState<IQueryParams>({
     page: 0,
@@ -28,11 +27,12 @@ const ResultOfMVs: React.FC<ResultOfMVsProps> = (props) => {
   const classes = classnames("result-of-mvs", {
     hidden: !show
   });
-  const context = useContext(MVContext);
+  const context = useContext(SetHistoryStackContext);
+  const history = useHistory();
 
   function handleItemClick(id: string) {
-    context.changeMVId(id);
-    changeTypeShow("mv");
+    context.setHistoryStack("push", "mv");
+    history.push("/mv/" + id);
   }
 
   function handlePageSizeChange(page: number) {
@@ -48,7 +48,7 @@ const ResultOfMVs: React.FC<ResultOfMVsProps> = (props) => {
     let isUnmount = false;
     function parseMVs(mvs: any[]) {
       const _arr: ISearchOfMVItem[] = [];
-
+      if (!(mvs instanceof Array)) return [];
       for (let i = 0; i < mvs.length; i++) {
         const item = mvs[i];
         _arr.push({
@@ -56,7 +56,7 @@ const ResultOfMVs: React.FC<ResultOfMVsProps> = (props) => {
           name: item.name,
           duration: parseTime(item.duration),
           playCount: parsePlayCount(item.playCount),
-          singerName: mergeSingerNames(item.artists),
+          singers: mergeSingers(item.artists),
           picUrl: item.cover
         });
       }
@@ -109,7 +109,11 @@ const ResultOfMVs: React.FC<ResultOfMVsProps> = (props) => {
                 </div>
               </div>
               <p className="name">{item.name}</p>
-              <p className="singer-name">{item.singerName}</p>
+              <p className="singer-name">
+                {item.singers.map((singer) => (
+                  <span key={singer.id}>{singer.name}</span>
+                ))}
+              </p>
             </div>
           );
         })}
@@ -123,12 +127,4 @@ const ResultOfMVs: React.FC<ResultOfMVsProps> = (props) => {
   );
 };
 
-const mapDispatchToProps = (dispatch: any) => {
-  return {
-    changeTypeShow(type: showOfType) {
-      dispatch(getChangeTypeShowAction(type));
-    }
-  };
-};
-
-export default connect(null, mapDispatchToProps)(React.memo(ResultOfMVs));
+export default React.memo(ResultOfMVs);

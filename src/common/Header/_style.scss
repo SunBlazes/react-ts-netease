@@ -2,6 +2,7 @@
   height: $header-height;
   background-color: $dot-active-color;
   padding: $header-inner-padding-y $header-inner-padding-x;
+  min-width: 1000px;
 
   .header-inner {
     height: $height-inner-height;

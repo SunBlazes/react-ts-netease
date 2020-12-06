@@ -41,12 +41,14 @@ const SignIn: React.FC<SignInProps> = (props) => {
           <Form.Item
             name="phone"
             rules={[{ required: true, message: "手机号必须填写" }]}
+            initialValue="18257712408"
           >
             <Input prefix={<MobileOutlined />} allowClear />
           </Form.Item>
           <Form.Item
             name="password"
             rules={[{ required: true, message: "密码必须填写" }]}
+            initialValue="a986176132"
           >
             <Input.Password prefix={<LockOutlined />} allowClear />
           </Form.Item>

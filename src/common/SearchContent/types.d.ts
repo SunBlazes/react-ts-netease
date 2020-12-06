@@ -5,6 +5,5 @@ interface SearchContentProps {
 interface HotSearchContentProps {}
 
 interface SearchKeywordsProps {
-  changeTypeShow: (type: showOfType) => void;
   value: string;
 }

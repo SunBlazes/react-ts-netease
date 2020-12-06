@@ -1,6 +1,9 @@
 export const SET_USER_INFO = "set_user_info";
 type SET_USER_INFO_TYPE = typeof SET_USER_INFO;
 
+export const USER_LOG_OUT = "user_log_out";
+type USER_LOG_OUT_TYPE = typeof USER_LOG_OUT;
+
 export const UPDATE_USER_STATE = "update_user_state";
 type UPDATE_USER_STATE_TYPE = typeof UPDATE_USER_STATE;
 
@@ -9,9 +12,16 @@ export interface SetUserInfoType {
   user: UserProps;
 }
 
+export interface UserLogOutType {
+  type: USER_LOG_OUT_TYPE;
+}
+
 export interface UpdateUserStateType {
   type: UPDATE_USER_STATE_TYPE;
   state: boolean;
 }
 
-export type HeaderActionType = SetUserInfoType | UpdateUserStateType;
+export type HeaderActionType =
+  | SetUserInfoType
+  | UpdateUserStateType
+  | UserLogOutType;

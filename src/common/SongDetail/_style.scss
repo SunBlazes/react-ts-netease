@@ -7,8 +7,13 @@
   left: 0;
   padding: 10px 10px;
   display: flex;
-  .animate__animated {
+
+  .enter {
     animation-duration: 400ms !important;
+  }
+
+  .exit {
+    animation-duration: 200ms !important;
   }
 
   .zsw-song-detail-left {
@@ -72,13 +77,11 @@
   right: 0;
   background-color: white;
   z-index: 1002;
+  opacity: 1;
   overflow: scroll;
-  
+
   &.hidden {
     visibility: hidden;
-    .zsw-song-detail-content-bottom {
-      display: none;
-    }
   }
 
   &::-webkit-scrollbar{

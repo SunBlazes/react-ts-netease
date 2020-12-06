@@ -39,14 +39,16 @@ const SingerAlbum: React.FC<SingerAlbumProps> = (props) => {
         !isUnmount && setOffset((offset) => offset + 15);
       }
     }
-    const el = document.getElementsByClassName("home-content")[0];
-    if (show) {
+    const el = document.getElementsByClassName("zsw-singer-detail")[0];
+    if (show && el) {
       el.addEventListener("scroll", handleScroll);
     }
 
     return () => {
       isUnmount = true;
-      el.removeEventListener("scroll", handleScroll);
+      if (el) {
+        el.removeEventListener("scroll", handleScroll);
+      }
     };
   }, [show]);
 

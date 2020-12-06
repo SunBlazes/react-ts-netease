@@ -1,13 +1,20 @@
 .total-playlists {
-  display: none;
-  padding: 15px 15px 0 15px;
+  height: calc(100vh - 50px - 56px );
+  overflow: hidden;
+  overflow-y: scroll;
+  @extend %scroll-bar;
   > * {
     user-select: none;
   }
-  &.show {
-    display: block;
+  > div {
+    width: 75%;
+    min-width: 900px;
+    max-width: 1050px;
+    padding: 0 30px;
+    margin: 0 auto;
   }
   .all-categories {
+    margin-top: 20px;
     position: relative;
     .all-categories-btn {
       padding: 2px 7px;

@@ -1,6 +1,4 @@
-interface SingerRank {
-  show: boolean;
-}
+interface SingerRank {}
 
 interface ISingerItemInfo {
   name: string;

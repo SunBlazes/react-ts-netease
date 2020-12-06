@@ -1,20 +1,20 @@
-import React from "react";
+import React, { useContext, useState } from "react";
+import { Popconfirm } from "antd";
 import SearchInput from "../SearchInput";
 import { UserOutlined, LeftOutlined, RightOutlined } from "@ant-design/icons";
 import { connect } from "react-redux";
 import { UnionStateTypes } from "../../store";
 import { getChangeSignInShowAction } from "../SignIn/store/actionCreator";
-import {
-  getToggleTypeShowAction,
-  direction,
-  getChangeTypeShowAction
-} from "../../pages/Home/store";
+import { HistoryStackProps } from "../../pages/Home";
+import { useHistory } from "react-router-dom";
+import { SetHistoryStackContext } from "../../pages/Home";
+import { getUserLogOutAction } from "./store/actionCreator";
+import { useAliveController } from "react-activation";
 
 interface HeaderProps extends HeaderStoreStateProps {
   changeSignInShow: (flag: boolean) => void;
-  currLinkedItem: ShowOfTypeLinkedItem;
-  toggleTypeShow: (direction: direction) => void;
-  changeTypeShow: (type: showOfType) => void;
+  historyStack: HistoryStackProps;
+  handleUserLogOut: () => void;
 }
 
 const Header: React.FC<HeaderProps> = (props) => {
@@ -22,28 +22,39 @@ const Header: React.FC<HeaderProps> = (props) => {
     userState,
     user,
     changeSignInShow,
-    currLinkedItem,
-    toggleTypeShow,
-    changeTypeShow
+    historyStack,
+    handleUserLogOut
   } = props;
   const { nickname, avatarUrl } = user;
+  const history = useHistory();
+  const context = useContext(SetHistoryStackContext);
+  const [visible, setVisible] = useState(false);
+  const { dropScope } = useAliveController();
 
   function enterLogin() {
     if (!userState) {
-      changeSignInShow(true);
+      return changeSignInShow(true);
     }
+    setVisible(!visible);
   }
 
   function handlePrevClick() {
-    if (currLinkedItem.prev) {
-      toggleTypeShow("prev");
-    }
+    if (!historyStack.prev) return;
+    context.setHistoryStack("prev", "");
+    history.goBack();
   }
 
   function handleNextClick() {
-    if (currLinkedItem.next) {
-      toggleTypeShow("next");
-    }
+    if (!historyStack.next) return;
+    context.setHistoryStack("next", "");
+    history.goForward();
+  }
+
+  function handleOk() {
+    handleUserLogOut();
+    history.replace("/");
+    context.setHistoryStack("clear", "");
+    dropScope(/^((?!recommend).)*$/);
   }
 
   return (
@@ -55,13 +66,13 @@ const Header: React.FC<HeaderProps> = (props) => {
         </a>
         <div className="navigators">
           <div
-            className={`navigator-prev ${currLinkedItem.prev ? "able" : ""}`}
+            className={`navigator-prev ${historyStack.prev ? "able" : ""}`}
             onClick={handlePrevClick}
           >
             <LeftOutlined />
           </div>
           <div
-            className={`navigator-next ${currLinkedItem.next ? "able" : ""}`}
+            className={`navigator-next ${historyStack.next ? "able" : ""}`}
             onClick={handleNextClick}
           >
             <RightOutlined />
@@ -70,7 +81,10 @@ const Header: React.FC<HeaderProps> = (props) => {
         <SearchInput
           style={{ float: "left", marginLeft: "4rem" }}
           placeholder="搜索音乐,歌手,歌词,用户"
-          onSearch={() => changeTypeShow("searchResult")}
+          onSearch={(keywords: string) => {
+            context.setHistoryStack("push", "searchResult");
+            history.push(`/searchResult/${keywords}`);
+          }}
         />
         <div className="user" onClick={enterLogin}>
           <span className="user-img">
@@ -85,6 +99,13 @@ const Header: React.FC<HeaderProps> = (props) => {
           ) : (
             <span className="user-state user-offline">未登录</span>
           )}
+          <Popconfirm
+            visible={visible}
+            title="确定退出吗"
+            cancelText="取消"
+            okText="退出"
+            onConfirm={handleOk}
+          />
         </div>
       </div>
     </div>
@@ -93,11 +114,9 @@ const Header: React.FC<HeaderProps> = (props) => {
 
 const mapStateToProps = function (state: UnionStateTypes) {
   const header = state.header;
-  const home = state.home;
   return {
     user: header.user,
-    userState: header.userState,
-    currLinkedItem: home.currLinkedItem
+    userState: header.userState
   };
 };
 
@@ -107,11 +126,9 @@ const mapDispatchToProps = function (dispatch: any) {
       const action = getChangeSignInShowAction(flag);
       dispatch(action);
     },
-    toggleTypeShow(direction: direction) {
-      dispatch(getToggleTypeShowAction(direction));
-    },
-    changeTypeShow(type: showOfType) {
-      dispatch(getChangeTypeShowAction(type));
+    handleUserLogOut() {
+      const action = getUserLogOutAction();
+      dispatch(action);
     }
   };
 };

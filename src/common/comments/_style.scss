@@ -90,13 +90,20 @@
 }
 
 .zsw-more-comments {
-  position: absolute;
-  z-index: 1002;
-  top: 0;
-  right: 0;
-  left: 0;
-  bottom: 0;
-  background-color: snow;
+  height: calc(100vh - 50px - 56px );
+  overflow: hidden;
+  overflow-y: scroll;
+  @extend %scroll-bar;
+  background-color: #fff;
+  > * {
+    user-select: none;
+  }
+  > div {
+    height: 100%;
+    padding: 0 30px;
+    margin: 0 auto;
+    background-color: #fff;
+  }
 
   .more-comments-nav {
     text-align: left;

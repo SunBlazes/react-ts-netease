@@ -2,14 +2,12 @@ import React, {
   useState,
   ChangeEvent,
   useEffect,
-  useContext,
   useCallback,
   createContext
 } from "react";
 import classnames from "classnames";
 import useDebounce from "../../hooks/useDebounce";
 import SearchContent from "../SearchContent";
-import { SearchOfResultContext } from "../../pages/Home";
 
 interface SearchInputProps {
   style?: React.CSSProperties;
@@ -20,7 +18,7 @@ interface SearchInputProps {
   value?: string;
   suffix?: boolean;
   suffixIcon?: string;
-  onSearch?: () => void;
+  onSearch?: (keywords: string) => void;
 }
 
 interface ISearchInputContext {
@@ -47,7 +45,6 @@ const SearchInput: React.FC<SearchInputProps> = (props) => {
   const [inputValue, setValue] = useState(value);
   const debouncedValue = useDebounce(inputValue);
   const [isFocused, setFocused] = useState(false);
-  const context = useContext(SearchOfResultContext);
 
   const changeValue = useCallback((value: string) => {
     setValue(value);
@@ -65,8 +62,7 @@ const SearchInput: React.FC<SearchInputProps> = (props) => {
 
   function handleSearchClick() {
     if (inputValue) {
-      context.changeKeywords(inputValue);
-      onSearch && onSearch();
+      onSearch && onSearch(inputValue);
     }
   }
 
@@ -78,6 +74,12 @@ const SearchInput: React.FC<SearchInputProps> = (props) => {
     setTimeout(() => {
       setFocused(false);
     }, 200);
+  }
+
+  function handleKeyUp(e: React.KeyboardEvent) {
+    if (e.key === "Enter") {
+      handleSearchClick();
+    }
   }
 
   useEffect(() => {
@@ -93,6 +95,7 @@ const SearchInput: React.FC<SearchInputProps> = (props) => {
         value={inputValue || ""}
         onFocus={handleFocus}
         onBlur={handleBlur}
+        onKeyUp={handleKeyUp}
       />
       {suffix && (
         <i

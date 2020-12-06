@@ -1,11 +1,16 @@
 .total-singer-rank {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  display: none;
-
+  height: calc(100vh - 50px - 56px );
+  overflow: hidden;
+  overflow-y: scroll;
+  @extend %scroll-bar;
+  > * {
+    user-select: none;
+  }
+  > div {
+    width: 1050px;
+    padding: 0 30px;
+    margin: 0 auto;
+  }
   &.show {
     display: block;
   }

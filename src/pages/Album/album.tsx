@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
 import {
   PlayCircleOutlined,
   FolderAddOutlined,
@@ -11,17 +11,23 @@ import * as types from "./types";
 import {
   parseDate,
   parseTime,
-  mergeSingerNames,
+  mergeSingers,
   parseCopyright
 } from "../../utils";
 import { connect } from "react-redux";
 import { getSetPlayDetailMapAction } from "../../common/Player/store";
 import Comments from "../../common/comments";
 import classnames from "classnames";
-import { UnionStateTypes } from "../../store";
+import { match, useHistory } from "react-router-dom";
+import { SetHistoryStackContext } from "../../pages/Home";
 
-const Album: React.FC<types.AlbumProps> = (props) => {
-  const { setPlayDetailMap, id, show } = props;
+interface AlbumProps {
+  setPlayDetailMap: (map: Map<string, PlayDetailItem>) => void;
+  match: match;
+}
+
+const Album: React.FC<AlbumProps> = (props) => {
+  const { setPlayDetailMap } = props;
   const [current, setCurrent] = useState<types.currentType>("songs");
   const [info, setInfo] = useState<types.AlbumInfo>();
   const [songs, setSongs] = useState<types.IAlbumSongItem[]>([]);
@@ -29,9 +35,16 @@ const Album: React.FC<types.AlbumProps> = (props) => {
     new Map<string, PlayDetailItem>()
   );
   const [loading, setLoading] = useState(false);
-  const classes = classnames("album", {
-    hidden: !show
-  });
+  const classes = classnames("album");
+  const match = props.match as match<{ id: string }>;
+  const context = useContext(SetHistoryStackContext);
+  const history = useHistory();
+
+  function toSingerDetail(id: string) {
+    if (!id) return;
+    context.setHistoryStack("push", "singerDetail");
+    history.push("/singerDetail/" + id);
+  }
 
   useEffect(() => {
     let isUnmount = false;
@@ -42,11 +55,11 @@ const Album: React.FC<types.AlbumProps> = (props) => {
         name: data.name,
         description: data.description,
         artistName: data.artist.name,
-        shareCount: data.info.shareCount
+        shareCount: data.info.shareCount,
+        id: data.artist.id
       };
     }
     function parseSongs(songs: any[]) {
-      console.log(songs);
       const _arr: types.IAlbumSongItem[] = [];
 
       for (let i = 0; i < songs.length; i++) {
@@ -64,14 +77,15 @@ const Album: React.FC<types.AlbumProps> = (props) => {
 
         const parsedItem = {
           duration: parseTime(dt),
-          singerName: mergeSingerNames(ar),
+          singers: mergeSingers(ar),
           id,
           index: (i + 1).toString().padStart(2, "0"),
           album: name,
           picUrl,
           name: songs[i].name,
           hasCopyRight: copyright,
-          alia: alia.join(",")
+          alia: alia.join(","),
+          albumId: songs[i].ar.id
         };
         if (copyright) {
           map.current.set(id, parsedItem);
@@ -84,19 +98,19 @@ const Album: React.FC<types.AlbumProps> = (props) => {
     async function fetchData() {
       !isUnmount && setSongs([]);
       !isUnmount && setLoading(true);
-      const { data } = await axios.get("/album?id=" + id);
+      const { data } = await axios.get("/album?id=" + match.params.id);
       !isUnmount && setInfo(parseInfo(data.album));
       !isUnmount && setSongs(parseSongs(data.songs));
       !isUnmount && setPlayDetailMap(map.current);
       !isUnmount && setLoading(false);
     }
-    if (id && current === "songs") {
+    if (match.params.id && current === "songs") {
       fetchData();
     }
     return () => {
       isUnmount = true;
     };
-  }, [id, current, setPlayDetailMap]);
+  }, [match.params.id, current, setPlayDetailMap]);
 
   function itemClick(curr: types.currentType) {
     setCurrent(curr);
@@ -156,7 +170,10 @@ const Album: React.FC<types.AlbumProps> = (props) => {
             <div className="album-panel-3">
               <p>
                 歌手:
-                <span className="singer-name">
+                <span
+                  className="singer-name"
+                  onClick={() => toSingerDetail(info!.id)}
+                >
                   {info ? info.artistName : ""}
                 </span>
               </p>
@@ -190,7 +207,9 @@ const Album: React.FC<types.AlbumProps> = (props) => {
           </li>
         </ul>
         {current === "songs" && <AlbumSongs songs={songs} loading={loading} />}
-        {current === "comments" && <Comments type="album" id={id} />}
+        {current === "comments" && (
+          <Comments type="album" id={match.params.id} />
+        )}
         {current === "albumInfo" && (
           <div className="album-info">
             <div className="title">专辑介绍</div>
@@ -202,13 +221,6 @@ const Album: React.FC<types.AlbumProps> = (props) => {
   );
 };
 
-const mapStateToProps = (state: UnionStateTypes) => {
-  const home = state.home;
-  return {
-    show: home.showMap.get("album") as boolean
-  };
-};
-
 const mapDispatchToProps = (dispatch: any) => {
   return {
     setPlayDetailMap(map: Map<string, PlayDetailItem>) {
@@ -217,4 +229,4 @@ const mapDispatchToProps = (dispatch: any) => {
   };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(React.memo(Album));
+export default connect(null, mapDispatchToProps)(React.memo(Album));

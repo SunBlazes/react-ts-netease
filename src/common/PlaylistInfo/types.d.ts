@@ -11,15 +11,21 @@ interface SongSheetProps extends ISongSheet {
   willPlaylistId: string[];
 }
 
+interface ISingerInfo {
+  name: string;
+  id: string;
+}
+
 interface ISongSheetItem {
   name: string;
-  singerName: string;
+  singers: ISingerInfo[];
   album: string;
   duration: string;
   index: string;
   id: string;
   picUrl: string;
   hasCopyRight: boolean;
+  albumId: string;
 }
 
 interface ISongSheet {
@@ -50,5 +56,4 @@ interface WillPlayTableProps {
   current: string;
   playState: boolean;
   pushPlayQueue: (ids: string | Array<string>) => void;
-  removeShowType: (showType: showOfType) => void;
 }

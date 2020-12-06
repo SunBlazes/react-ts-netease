@@ -1,11 +1,10 @@
 import React, { useState, useEffect, useContext } from "react";
 import axios from "../../network";
 import { PaginationProps } from "antd/es/pagination";
-import { connect } from "react-redux";
-import { getChangeTypeShowAction } from "../Home/store";
 import ResultOfPagination from "./resultOfPagination";
 import classnames from "classnames";
-import { PlaylistContext } from "../Home";
+import { SetHistoryStackContext } from "../Home";
+import { useHistory } from "react-router-dom";
 
 export interface IQueryParams {
   page: number;
@@ -13,7 +12,7 @@ export interface IQueryParams {
 }
 
 const ResultOfPlaylists: React.FC<ResultOfPlaylistsProps> = (props) => {
-  const { setLoading, setSearchCount, changeTypeShow, keywords } = props;
+  const { setLoading, setSearchCount, keywords } = props;
   const [playlists, setPlaylists] = useState<ResultOfPlaylistItem[]>([]);
   const [queryParams, setQueryParams] = useState<IQueryParams>({
     page: 0,
@@ -26,11 +25,12 @@ const ResultOfPlaylists: React.FC<ResultOfPlaylistsProps> = (props) => {
   const [pagination, setPagination] = useState<PaginationProps>({
     current: 1
   });
-  const context = useContext(PlaylistContext);
+  const context = useContext(SetHistoryStackContext);
+  const history = useHistory();
 
   function handleItemClick(id: string) {
-    context.changePlaylistId(id);
-    changeTypeShow("playlist");
+    context.setHistoryStack("push", "playlist");
+    history.push("/playlist/" + id);
   }
 
   function handlePageSizeChange(page: number) {
@@ -46,7 +46,7 @@ const ResultOfPlaylists: React.FC<ResultOfPlaylistsProps> = (props) => {
     let isUnmount = false;
     function parsePlaylists(playlists: any[]) {
       const _arr: ResultOfPlaylistItem[] = [];
-
+      if (!(playlists instanceof Array)) return [];
       for (let i = 0; i < playlists.length; i++) {
         const item = playlists[i];
         _arr.push({
@@ -115,12 +115,4 @@ const ResultOfPlaylists: React.FC<ResultOfPlaylistsProps> = (props) => {
   );
 };
 
-const mapDispatchToProps = (dispatch: any) => {
-  return {
-    changeTypeShow(type: showOfType) {
-      dispatch(getChangeTypeShowAction(type));
-    }
-  };
-};
-
-export default connect(null, mapDispatchToProps)(React.memo(ResultOfPlaylists));
+export default React.memo(ResultOfPlaylists);

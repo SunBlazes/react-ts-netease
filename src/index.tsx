@@ -7,12 +7,16 @@ import * as serviceWorker from "./serviceWorker";
 import { Provider } from "react-redux";
 import store from "./store";
 import "animate.css";
+import { AliveScope } from "react-activation";
+import { HashRouter } from "react-router-dom";
 
 ReactDOM.render(
   <Provider store={store}>
-    {/* <React.StrictMode> */}
-    <App />
-    {/* </React.StrictMode> */}
+    <HashRouter>
+      <AliveScope>
+        <App />
+      </AliveScope>
+    </HashRouter>
   </Provider>,
   document.getElementById("root")
 );

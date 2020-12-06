@@ -13,54 +13,21 @@ declare interface SignInStoreStateProps {
   show: boolean;
 }
 
-declare interface CommentsStoreStateProps {
-  id: string;
-  type: commentType;
-}
-
-type showOfType =
-  | "playlist"
-  | "songDetailContent"
-  | "moreComments"
-  | "comments"
-  | "moreComments"
-  | "recommend"
-  | "totalPlaylist"
-  | "rank"
-  | "singer"
-  | "singerRank"
-  | "songDetailContent"
-  | "singerDetail"
-  | "mv"
-  | "searchResult"
-  | "album";
-
-declare interface ShowOfTypeLinkedItem {
-  currType: showOfType;
-  prev?: ShowOfTypeLinkedItem;
-  next?: ShowOfTypeLinkedItem;
-  id?: number;
-}
-
-declare interface HomeStoreStateProps {
-  showMap: Map<showOfType, boolean>;
-  currLinkedItem: ShowOfTypeLinkedItem;
-}
-
 declare interface PlayDetailItem {
   name: string;
-  singerName: string;
+  singers: ISingerInfo[];
   album: string;
   duration: string;
   id: string;
   picUrl: string;
   hasCopyRight: boolean;
   alia: string;
+  albumId: string;
 }
 
 declare interface WillPlayItem {
   name: string;
-  singerName: string;
+  singers: ISingerInfo[];
   duration: string;
   id: string;
 }

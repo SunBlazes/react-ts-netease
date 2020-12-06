@@ -20,10 +20,11 @@
 .home-content {
   position: relative;
   scroll-behavior: smooth;
-  @extend %scroll-bar;
-  min-width: 950px;
-  padding: 0 30px;
-  overflow: scroll;
+  // @extend %scroll-bar;
+  // min-width: 950px;
+  // padding: 0 30px;
+  overflow: hidden;
+  // overflow: scroll;
 }
 
 .home-footer {
