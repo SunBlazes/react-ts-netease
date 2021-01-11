@@ -1,4 +1,9 @@
+<<<<<<< HEAD
 import React, { useContext } from "react";
+=======
+import React, { useState } from "react";
+import { Menu } from "antd";
+>>>>>>> ed6b652f683d68cadbed2cc516b8539c7ce1a01d
 import Recommend from "../Recommend";
 import { CSSTransition } from "react-transition-group";
 import TotalPlaylists from "../TotalPlaylists";
@@ -23,9 +28,20 @@ const SearchMusic: React.FC<SearchMusicProps> = () => {
   const classes = classnames("search-music");
   const context = useContext(SetHistoryStackContext);
 
+<<<<<<< HEAD
   function moreClick() {
     context.setHistoryStack("push", "totalPlaylist");
     history.push("/totalPlaylist");
+=======
+  function handleItemClick(e: any){
+    const key = e.key as currentType;
+    changeShow(key);
+    const _firstRequest = { ...firstRequest };
+    if (!_firstRequest[key]) {
+      _firstRequest[key] = true;
+      setFirstRequest(_firstRequest);
+    }
+>>>>>>> ed6b652f683d68cadbed2cc516b8539c7ce1a01d
   }
 
   function returnTransition(

@@ -107,6 +107,7 @@ const Home: React.FC<HomeProps> = (props) => {
     }
   };
 
+<<<<<<< HEAD
   useEffect(() => {
     function handleOffline() {
       console.log("offline");
@@ -114,6 +115,34 @@ const Home: React.FC<HomeProps> = (props) => {
         content: "亲, 请连接网络 !!",
         duration: 0
       });
+=======
+  function changeKeywords(keywords: string) {
+    setKeywords(keywords);
+  }
+
+  function changePlaylistId(id: string) {
+    setPlaylistId(id);
+  }
+
+  function changeAlbumId(id: string) {
+    setAlbumId(id);
+  }
+
+  function changeSingerId(id: string) {
+    setSingerId(id);
+  }
+
+  function changeMVId(id: string) {
+    setMVId(id);
+  }
+
+  function handleItemClick(e: any) {
+    const key = e.key as currentType;
+    setCurrent(key);
+
+    if (key === "mylove") {
+      handleMyLove();
+>>>>>>> ed6b652f683d68cadbed2cc516b8539c7ce1a01d
     }
 
     function handleOnline() {
