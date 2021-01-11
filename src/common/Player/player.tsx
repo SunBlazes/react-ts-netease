@@ -11,6 +11,7 @@ import { connect } from "react-redux";
 import { Slider, Tooltip } from "antd";
 import { mapDispatchToProps, mapStateToProps } from "./mapToProps";
 import WillPlayList from "./willPlayList";
+import useOnclickOutside from "react-cool-onclickoutside";
 
 const playModeArr: Array<IPlayMode> = [
   {
@@ -52,6 +53,7 @@ const Player: React.FC<PlayerProps> = (props) => {
   const [playMode, changePlayMode] = useState(0);
   // 播放队列是否显示
   const [willShow, setWillShow] = useState(false);
+  const ref = useOnclickOutside(() => setWillShow(false));
 
   function prev() {
     if (playQueue.length === 0) {
@@ -189,7 +191,7 @@ const Player: React.FC<PlayerProps> = (props) => {
   }, []);
 
   return (
-    <div className="zsw-player">
+    <div className="zsw-player" ref={ref}>
       <ul className="btn">
         <li>
           <StepBackwardFilled onClick={prev} />

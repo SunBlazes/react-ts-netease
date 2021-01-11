@@ -8,7 +8,7 @@ import React, {
 import classnames from "classnames";
 import useDebounce from "../../hooks/useDebounce";
 import SearchContent from "../SearchContent";
-
+import useOnclickOutside from 'react-cool-onclickoutside'
 interface SearchInputProps {
   style?: React.CSSProperties;
   onChange?: (value: any) => void;
@@ -45,6 +45,7 @@ const SearchInput: React.FC<SearchInputProps> = (props) => {
   const [inputValue, setValue] = useState(value);
   const debouncedValue = useDebounce(inputValue);
   const [isFocused, setFocused] = useState(false);
+  const ref = useOnclickOutside(() => setFocused(false));
 
   const changeValue = useCallback((value: string) => {
     setValue(value);
@@ -70,12 +71,6 @@ const SearchInput: React.FC<SearchInputProps> = (props) => {
     setFocused(true);
   }
 
-  function handleBlur() {
-    setTimeout(() => {
-      setFocused(false);
-    }, 200);
-  }
-
   function handleKeyUp(e: React.KeyboardEvent) {
     if (e.key === "Enter") {
       handleSearchClick();
@@ -87,14 +82,13 @@ const SearchInput: React.FC<SearchInputProps> = (props) => {
   }, [onChange, debouncedValue, debounce]);
 
   return (
-    <div className={classes} style={style}>
+    <div className={classes} style={style} ref={ref}>
       <input
         type="text"
         onChange={handleInput}
         placeholder={placeholder}
         value={inputValue || ""}
         onFocus={handleFocus}
-        onBlur={handleBlur}
         onKeyUp={handleKeyUp}
       />
       {suffix && (

@@ -31,10 +31,6 @@ const SearchKeywords: React.FC<SearchKeywordsProps> = (props) => {
     history.push("/album/" + id);
   }
 
-  // function handleSongClick() {
-
-  // }
-
   useEffect(() => {
     let isUnmount = false;
     function parseSongs(songs: any[]) {
